@@ -126,3 +126,42 @@ It is super easy to connect grafana to the prometheus logs immediately. Do this 
 
 Like prometheus, I'll research and document this in another project.  
 
+## Access the cluster remotely  
+
+### From Within my Home Network
+
+This allows me to access the cluster without ssh-ing into the main node's computer.  
+
+#### References  
+
+I found these instructions to merge kubeconfig files on stack [overflow]()  
+
+### Export the microk8s config  
+
+First we need to export the cluster config file from our local home cluster with:  
+
+```
+sudo microk8s kubectl config view --flatten > ~/micro_kubeconfig
+```
+
+Move that to my local computer's WSL. I did this with a simple copy paste after creating a local file for my `microk8s_kubeconfig`  
+
+```
+nkester@SOFDEL-36:~/.kube$ touch ./microk8s_kubeconfig
+nkester@SOFDEL-36:~/.kube$ ls
+cache  config  config.eksctl.lock  microk8s_kubeconfig  origConfig
+nkester@SOFDEL-36:~/.kube$ vi ./microk8s_kubeconfig
+```  
+
+After copy-pasting into that file, make sure to change the server parameter from the local IP range (172.) to the node's home network IP. I left the port as is.
+### Backup and merge  
+
+```
+cp $HOME/.kube/config $HOME/.kube/config.backup.$(date +%Y-%m-%d.%H.%M.%S)
+KUBECONFIG=$HOME/.kube/config:$HOME/.kube/<new kubeconfig>: kubectl config view --merge --flatten > \
+~/.kube/merged_kubeconfig && mv ~/.kube/merged_kubeconfig ~/.kube/config
+kubectl get pods --context=cluster-1
+kubectl get pods --context=cluster-2
+```
+
+### From Outside my Home Network
