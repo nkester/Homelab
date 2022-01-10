@@ -164,4 +164,10 @@ kubectl get pods --context=cluster-1
 kubectl get pods --context=cluster-2
 ```
 
+### Set up a Sym-Link in my WSL2  
+
+The purpose of this is to make getting from my WSL2 home dir to my windows machine's Desktop easier. 
+
+`ln -s /mnt/c/Users/NeilKester/Desktop/ /home/nkester/WSL2/`
+
 ### From Outside my Home Network
