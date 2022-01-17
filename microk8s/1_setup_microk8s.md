@@ -171,3 +171,90 @@ The purpose of this is to make getting from my WSL2 home dir to my windows machi
 `ln -s /mnt/c/Users/NeilKester/Desktop/ /home/nkester/WSL2/`
 
 ### From Outside my Home Network
+
+Future work
+
+## Working through Storage Options  
+
+Pros and Cons for using the microk8s storage vs OpenEBS add-ons compared to using ceph or Longhorn.
+
+### Installing OpenEBS with microk8s  
+
+iscsid is a dependency of OpenEBS.
+
+`sudo systemctl enable iscsid`
+
+`sudo microk8s enable openebs`
+
+After successful installation, you should get a message like this:
+```
+Successfully installed OpenEBS.
+
+Check the status by running: kubectl get pods -n openebs
+
+The default values enables OpenEBS hostpath, device and jiva engines along with
+their default storage classes. Use `kubectl get sc` to see the list of installed
+OpenEBS StorageClasses.
+
+For other engines, you will need to perform a few more additional steps to
+enable the engine, configure the engines (like creating pools) and create
+storage classes.
+
+For example, cStor can be enabled using commands like:
+
+helm upgrade openebs openebs/openebs  --set cstor.enabled=true --reuse-values --namespace openebs
+
+For more information,
+- view the online documentation at https://openebs.io/ or
+- connect with an active community on Kubernetes slack #openebs channel.
+OpenEBS is installed
+
+
+-----------------------
+
+When using OpenEBS with a single node MicroK8s, it is recommended to use the openebs-hostpath StorageClass
+An example of creating a PersistentVolumeClaim utilizing the openebs-hostpath StorageClass
+
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-hostpath-pvc
+spec:
+  storageClassName: openebs-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5G
+
+
+
+-----------------------
+
+If you are planning to use OpenEBS with multi nodes, you can use the openebs-jiva-csi-default StorageClass.
+An example of creating a PersistentVolumeClaim utilizing the openebs-jiva-csi-default StorageClass
+
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jiva-volume-claim
+spec:
+  storageClassName: openebs-jiva-csi-default
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5G
+```
+
+### References
+
+[MicroK8s Addon: OpenEBS](https://microk8s.io/docs/addon-openebs)  
+
+[All Microk8s Addons](https://microk8s.io/docs/addons)  
+
+[Using MicroK8s Storage](https://www.server-world.info/en/note?os=Ubuntu_20.04&p=microk8s&f=5)
+
+[MicroK8s Storage Configuration](https://discuss.kubernetes.io/t/microk8s-storage-configuration/8829/3)
