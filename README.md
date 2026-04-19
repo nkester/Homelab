@@ -10,6 +10,7 @@ It's protected branches are mirrored to my public GitHub repository here: https:
 
 Below is the folder structure for the project:
 
+```text
 /
 ├── .gitlab/                # CI/CD pipelines (for linting and validation)
 ├── docs/                   # The "Commentary" layer
@@ -24,3 +25,4 @@ Below is the folder structure for the project:
 │   └── database/           # CloudNativePG configurations
 ├── argocd/                 # The "Controller" layer (App-of-Apps manifests)
 └── scripts/                # Helper scripts for talosctl or maintenance
+```
