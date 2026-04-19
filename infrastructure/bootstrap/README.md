@@ -1,0 +1,1 @@
+# Purpose: Talos machine configs (templates)
