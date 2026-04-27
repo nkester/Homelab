@@ -12,18 +12,19 @@ Below is the folder structure for the project:
 
 ```text
 /
-├── .gitlab/                # CI/CD pipelines (for linting and validation)
-├── docs/                   # The "Commentary" layer
-│   ├── adr/                # Architectural Decision Records (The "Why")
-│   └── architecture/       # Mermaid/Python diagrams and technical deep-dives
-├── infrastructure/         # The "Platform" layer (Cluster-wide services)
-│   ├── bootstrap/          # Talos machine configs (templates)
-│   ├── networking/         # Cilium and Ingress manifests
-│   └── storage/            # Longhorn configuration
 ├── apps/                   # The "Workload" layer
 │   ├── analytics/          # RStudio, VSCode, KubeFlow manifests
 │   └── database/           # CloudNativePG configurations
 ├── argocd/                 # The "Controller" layer (App-of-Apps manifests)
+├── docs/                   # The "Commentary" layer
+│   ├── adr/                # Architectural Decision Records (The "Why")
+│   ├── architecture/       # Mermaid/Python diagrams and technical deep-dives
+│   └── logs/               # Chronological project logs and epic summaries
+├── .gitlab/                # CI/CD pipelines (for linting and validation)
+├── infrastructure/         # The "Platform" layer (Cluster-wide services)
+│   ├── bootstrap/          # Talos machine configs (templates)
+│   ├── networking/         # Cilium and Ingress manifests
+│   └── storage/            # Longhorn configuration
 └── scripts/                # Helper scripts for talosctl or maintenance
 ```
 
@@ -161,7 +162,7 @@ Legend:
 🔲 Backlog: Planned feature set.
 
 ```
-🔵 Epic 0: Project & Environment Stabilization  
+✅ Epic 0: Project & Environment Stabilization  
 
   ✅ Feature 0.1: Mirror GitLab Project to Github  
   
@@ -179,9 +180,14 @@ Legend:
   
       - Authoring professional project overviews and initial technical documentation.  
 
-🔲 Epic 1: Hardware & Network Foundation  
+  ✅ Feature 0.5: Establish Documentation Scaffolding  
 
-  🔲 Feature 1.1: Logical Network Segmentation (VLAN 10)  
+      - Implement a tiered documentation structure separating current state, architectural intent, and decision history.
+  
+
+🔵 Epic 1: Hardware & Network Foundation  
+
+  🔵 Feature 1.1: Logical Network Segmentation (VLAN 10)  
       
       - Isolating the analytic enclave on the ER605 and defining inter-VLAN routing.  
 

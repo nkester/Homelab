@@ -1,0 +1,7 @@
+Category,Sub-Category,Manufacturer,Model/Identifier,Specifications,Role
+Compute,Control Node,HP,Compaq Pro 6300 SFF (QV985AV),"i7-3770 @ 3.4GHz, 20GB DDR3, 256GB SSD",Control Plane / Management
+Compute,Worker Node,Lenovo,ideacenter 310S-08IAP,"MTM: 90GA002US, 4GB RAM, 500GB HDD",Worker Node 01
+Compute,Worker Node,Dell,Inspirion 15R-5537,"DPN: YHJN4 A01, HDD: [Capacity TBD]",Worker Node 02
+Network,Router,TP-Link,Omada ER605 (V1/V2),"Gigabit VPN Router, 192.168.1.1 Gateway",Gateway / DHCP Authority
+Network,Access Point,Verizon,CR1000A,"ISP Gateway (Bridge/Passthrough Mode)",ISP Termination
+Network,Wireless Mesh,Netgear,Orbi System,"Base + Satellite",Wireless Backhaul / Enclave Bridge
