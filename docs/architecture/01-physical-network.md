@@ -6,7 +6,10 @@ This document defines the physical cabling and Layer 2 connectivity for the GitO
 ## 2. Logical Design
 The network is structured to bypass ISP firmware limitations by placing the Verizon CR1000A in a bridge/passthrough capacity, allowing the ER605 to handle primary routing and DHCP for the cluster.
 
-### Topology Diagram
+
+### Topology Diagram  
+
+
 ```mermaid
 graph TD
     subgraph "Public Internet"
@@ -32,7 +35,9 @@ graph TD
     RBR50 -.->|Wireless Backhaul| Satellite
     Satellite -->|Ethernet| Nodes
 
-    ```
+
+```  
+
 
 ## 3. Implementation Details  
 
