@@ -28,8 +28,8 @@ graph TD
     end
 
     ONT -->|Ethernet - Port 1| ER605
-    ER605 -->|Ethernet - Port 2| CR1000A
-    ER605 -->|Ethernet - Port 3, Untagged VLAN 10| RBR50
+    ER605 -->|Ethernet - Port 2, Untagged VLAN 10| RBR50
+    ER605 -->|Ethernet - Port 3| CR1000A
     CR1000A -->|MoCA / Coax| TV[Set Top Boxes]
     RBR50 -.->|Dedicated 5GHz Backhaul| Satellite
     Satellite -->|Ethernet| Switch
@@ -39,11 +39,11 @@ graph TD
 ## 3. Implementation Details  
 
 * **Primary Gateway:** ER605 (192.168.1.1) manages routing and state for all VLANs.
-* **VLAN 1 (Management/Personal):** * `192.168.1.0/24` via ER605 Port 2.
+* **VLAN 1 (Management/Personal):** * `192.168.1.0/24` via ER605 Port 3.
   * Static assignments for infrastructure (.1 through .4).  
   * DHCP pool for transient personal devices (.5 through .254).
 * **VLAN 10 (Analytic Enclave):**
-  * `10.10.10.0/24` via ER605 Port 3 (Access Mode/PVID 10).
+  * `10.10.10.0/24` via ER605 Port 2 (Access Mode/PVID 10).
   * Orbi mesh strictly passes untagged L2 frames.
   * Switch localizes all intra-cluster synchronous state to line-rate copper.
 
