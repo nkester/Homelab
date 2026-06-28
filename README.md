@@ -195,11 +195,11 @@ Legend:
 
 🔵 Epic 1: Hardware & Network Foundation  
 
-  🔵 Feature 1.1: Logical Network Segmentation (VLAN 10)  
+  ✅ Feature 1.1: Logical Network Segmentation (VLAN 10)  
       
       - Isolating the analytic enclave on the ER605 and defining inter-VLAN routing.  
 
-  🔲 Feature 1.2: Wireless Enclave Standoff  
+  🔵 Feature 1.2: Wireless Enclave Standoff  
   
       - Validating the Orbi mesh backhaul as a stable bridge for the remote compute nodes.  
 
