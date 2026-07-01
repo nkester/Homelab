@@ -26,10 +26,10 @@ Feature,1.1,Logical Network Segmentation (VLAN 10),Isolating the analytic enclav
  2. DHCP pool 10.10.10.x configured
  3. Port 3 PVID set to 10
  4. Client on Port 3 receives 10.10.10.x IP"
-Feature,1.2,Wireless Enclave Standoff,Configuring the Orbi mesh system as a dedicated wireless bridge for the lab nodes.,In Progress,"1. Orbi Base and Satellite assigned static IPs
+Feature,1.2,Wireless Enclave Standoff,Configuring the Orbi mesh system as a dedicated wireless bridge for the lab nodes.,Done,"1. Orbi Base and Satellite assigned static IPs
  2. Satellite Ethernet port provides connectivity to Enclave
  3. Failover/re-sync test passed"
-Feature,1.3,Scalable IP & DNS Schema,Defining static IP ranges and internal DNS forwarding (192.168.1.x/10.10.10.x).,To Do,"1. IP spreadsheet updated with node/service ranges
+Feature,1.3,Scalable IP & DNS Schema,Defining static IP ranges and internal DNS forwarding (192.168.1.x/10.10.10.x).,In Progress,"1. IP spreadsheet updated with node/service ranges
  2. Local DNS forwarders configured on ER605"
 Feature,1.4,API Server VIP (kube-vip),Implementing a Virtual IP for Kubernetes control plane high availability.,To Do,"1. Reserved IP (e.g., 10.10.10.10) verified as unused
  2. BGP or ARP config prepared for Talos"
@@ -39,20 +39,30 @@ Epic,2,Kubernetes Bootstrap (Talos OS),"Deploying a secure, declarative, and imm
  4. talosconfig secured"
 Feature,2.1,Node Preparation,"Generating Talos images and flashing hardware (Lenovo, HP, Dell).",To Do,"1. Hardware-specific Talos .raw or .iso images generated
  2. Nodes flashed and booting into Maintenance mode"
-Feature,2.2,Cluster Provisioning,Initializing the control plane and joining worker nodes via talosctl.,To Do,"1. 'talosctl apply-config' successful on all nodes
- 2. 'talosctl bootstrap' completed on primary CP"
+Feature,2.2,Cluster Provisioning,Initializing the control plane and joining worker nodes via OpenTofu as declarative GitOps.,To Do,"1. Siderolabs/talos provider configured in OpenTofu. (Open sourced Teraform)
+2. Machine configurations generated as declarative Teraform state.
+3. Control plan and workers joined via `tofu apply`."
 Feature,2.3,Cilium CNI Deployment,Deploying eBPF-based networking for the cluster.,To Do,"1. Cilium CLI reports 'OK'
  2. Hubbell connectivity verified
  3. Pod-to-pod traffic successful"
 Epic,3,GitOps & Analytic Stack,Deploying the management and data layer using the GitOps loop.,To Do,"1. ArgoCD managing all cluster state
  2. Secrets injected via ESO
  3. Persistent storage active"
-Feature,3.1,ArgoCD Deployment,Installing ArgoCD and bootstrapping the 'App-of-Apps' pattern.,To Do,"1. ArgoCD UI reachable
- 2. App-of-apps pattern syncs without errors"
+Feature,3.1,GitOps & Workflow Orchestration (ArgoCD & Argo Workflows).,Installing ArgoCD and Argo Workflows and bootstrapping the 'App-of-Apps' pattern.,To Do,"1. ArgoCD UI reachable
+2. Argo Workflows controller active on the cluster.
+3. Event-driven DAG (Directed Acyclic Graph) capability verified.
+4. Integration established with GitLab CI to mirror AWS Step Functions for automated operations.
+5. App-of-apps pattern syncs without errors"
 Feature,3.2,CNI & Storage Integration,Finalizing network policies and distributed storage for apps.,To Do,"1. Longhorn nodes report healthy
  2. StorageClass 'longhorn' set as default"
 Feature,3.3,External Secrets Operator,Automated secret injection from external providers into K8s secrets.,To Do,"1. SecretStore connected to GitLab/Vault
  2. Test secret successfully synced to K8s namespace"
+Feature,3.4,Object Storage Foundation (MiniO),Provide S3 API functionality required for enterprise data pipelines and backups (Velero).,To Do,"1. MiniO Operator deployed via ArgoCD.
+2. S3-compatible API reachable via internal NGINX Ingress.
+3. Test bucket provisioned declaratively via YAML/SecretStore."
+Feature,3.5,Serverless Execution (Knative),"Introduce Knative Serving to implement scale-to-zero FaaS capability, mirroring AWS Lambda.",To Do,"1. Knative Serving layer active on cluster.
+2. ""Scale-to-zero"" functionality verified for analytic functions.
+3. Service routing configured for event-driven triggers."
 Epic,4,Core Infrastructure Services,"Shared services for the cluster (Storage, Ingress, Certs).",To Do,"1. Shared services active (Storage, Ingress, Certs)
  2. Persistent volume claims binding successfully"
 Feature,4.1,Longhorn Distributed Storage,"Implementing persistent, replicated block storage.",To Do,"1. Longhorn UI shows all disks active
