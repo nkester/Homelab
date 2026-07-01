@@ -195,15 +195,15 @@ Legend:
 
 🔵 Epic 1: Hardware & Network Foundation  
 
-  🔵 Feature 1.1: Logical Network Segmentation (VLAN 10)  
+  ✅ Feature 1.1: Logical Network Segmentation (VLAN 10)  
       
       - Isolating the analytic enclave on the ER605 and defining inter-VLAN routing.  
 
-  🔲 Feature 1.2: Wireless Enclave Standoff  
+  ✅ Feature 1.2: Wireless Enclave Standoff  
   
       - Validating the Orbi mesh backhaul as a stable bridge for the remote compute nodes.  
 
-  🔲 Feature 1.3: Scalable IP & DNS Schema  
+  🔵 Feature 1.3: Scalable IP & DNS Schema  
   
       - Defining static reservations and DNS forwarders for cluster services.  
       
@@ -219,7 +219,7 @@ Legend:
 
   🔲 Feature 2.2: Cluster Provisioning  
   
-      - Initializing the control plane and joining worker nodes via talosctl.  
+      - Initializing the control plane and joining worker nodes via OpenTofu as declarative GitOps.  
 
   🔲 Feature 2.3: Cilium CNI Deployment  
   
@@ -227,21 +227,51 @@ Legend:
 
 🔲 Epic 3: GitOps & Shared Services  
 
-  🔲 Feature 3.1: ArgoCD Deployment  
+  🔲 Feature 3.1: ArgoCD and Argo Workflows Deployment  
   
-      - Bootstrapping the "App-of-Apps" pattern to automate all deployments.  
+      - Bootstrapping the "App-of-Apps" pattern to automate all deployments through Directed Acyclic Graphs and GitLab CI.  
 
-  🔲 Feature 3.2: Secret Management (ESO)  
+  🔲 Feature 3.2: CNI & Storage Integration
+
+      - Finalize network policies and distributed storage for apps.
+  
+  🔲 Feature 3.3: External Secret Management (ESO)  
   
       - Integrating External Secrets Operator to securely pull credentials from GitLab.  
 
-  🔲 Feature 3.3: Storage & Ingress  
+  🔲 Feature 3.4: Object Storage Foundation (MiniO)  
   
-      - Deploying Longhorn for persistent data and cert-manager for SSL.  
+      - Provide S3 API functionality to support data pipelines and backups.  
 
-🔲 Epic 4+: Future Analytic Layers (Summary)  
+  🔲 Feature 3.5: Serverless Execution through Knative
 
-  🔲 Observability: LGTM Stack (Loki, Grafana, Tempo, Mimir).  
+      - Implement Knative Serving to mirror AWS Lambda capabilities.
+
+🔲 Epic 4: Core Infrastructure Services
+
+  🔲 Feature 4.1: Longhorn Distributed Storage
+
+      - Implement persistent, replicated block storage.
+
+  🔲 Feature 4.2: Ingress & cert-manager
+
+      - Implement automated SSL/TLS and HTTP routing.
+
+🔲 Epic 5: Observability & Security Posture
+
+  🔲 Feature 5.1: LGTM Stack Deployment
+
+      - Implement the Loki, Grafana, Tempo, and Mimir stack for instrumentation and observability.
+
+  🔲 Feature 5.2: Network Policies
+
+      - Implement network control policies that support realistic best practices.
+
+  🔲 Feature 5.3: Disaster Recovery via Velero
+
+      - Automate backups to an external location.
+
+🔲 Epic 6+: Future Analytic Layers (Summary)  
 
   🔲 Data Layer: CloudNativePG for highly available Postgres.  
 

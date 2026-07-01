@@ -10,30 +10,55 @@ The network utilizes a hybrid topology due to physical cabling constraints. The 
 
 ```mermaid
 graph TD
-    subgraph "Public Internet"
-        ONT[Verizon ONT]
+    %% Define Styles
+    classDef vlan1 fill:#e6f7ff,stroke:#1890ff,stroke-width:2px;
+    classDef vlan10 fill:#fff1f0,stroke:#f5222d,stroke-width:2px;
+    classDef gateway fill:#f6ffed,stroke:#52c41a,stroke-width:2px;
+
+    ISP([Verizon ONT / ISP])
+
+    subgraph Gateway[Core Routing]
+        ER605[ER605 Router]:::gateway
     end
 
-    subgraph "Management & Personal Zone (VLAN 1)"
-        ER605[ER605 Gateway <br/> 192.168.1.1]
-        CR1000A[CR1000A Bridge <br/> 192.168.1.2]
-        PersonalWiFi[Personal Devices <br/> DHCP: .1.5 - .254]
+    subgraph VLAN1[Management & Personal Zone - VLAN 1]
+        CR1000A[CR1000A WiFi Bridge]
+        SenseCap[LoRaWAN Gateway]
+        NAS[Kester Hub NAS]
+        RasPi[Weather Station RasPi]
+        PersDev[Personal Devices]
     end
 
-    subgraph "Analytic Enclave (VLAN 10 - 10.10.10.0/24)"
-        RBR50[Orbi RBR50 Base <br/> AP Mode L2 Bridge]
-        Satellite[Orbi Satellite <br/> L2 Bridge Endpoint]
-        Switch[TL-SG108E Switch <br/> Unmanaged L2]
-        Nodes[Analytic Nodes <br/> HP/Lenovo/Dell]
+    subgraph VLAN10[Analytic Enclave - VLAN 10]
+        RBR50[Orbi Base L2 Bridge]
+        RBS50[Orbi Satellite L2 Bridge]
+        Switch[TL-SG108E Switch]
+        HP[HP Control Node]
+        W01[Lenovo Worker 01]
+        W02[Dell Worker 02]
     end
 
-    ONT -->|Ethernet - Port 1| ER605
-    ER605 -->|Ethernet - Port 2, Untagged VLAN 10| RBR50
+    %% WAN Connectivity
+    ISP -->|Ethernet - Port 1| ER605
+
+    %% VLAN 1 Routing (Default Untagged)
     ER605 -->|Ethernet - Port 3| CR1000A
-    CR1000A -->|MoCA / Coax| TV[Set Top Boxes]
-    RBR50 -.->|Dedicated 5GHz Backhaul| Satellite
-    Satellite -->|Ethernet| Switch
-    Switch -->|Ethernet| Nodes
+    ER605 -->|Ethernet - Port 4| SenseCap
+    CR1000A -->|Ethernet - Port 2| NAS
+    CR1000A -.->|WiFi| RasPi
+    CR1000A -.->|WiFi| PersDev
+
+    %% VLAN 10 Routing (PVID 10 Untagged)
+    ER605 -->|Ethernet - Port 2| RBR50
+    RBR50 -.->|Dedicated 5GHz Backhaul| RBS50
+    RBS50 -->|Ethernet - Port 3| Switch
+    Switch -->|Ethernet - Port 1| HP
+    Switch -->|Ethernet - Port 2| W01
+    Switch -->|Ethernet - Port 3| W02
+
+    %% Apply Classes
+    class VLAN1 vlan1;
+    class VLAN10 vlan10;
 ```
 
 ## 3. Implementation Details  
