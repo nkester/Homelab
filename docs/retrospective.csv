@@ -1,7 +1,0 @@
-Epic,Feature,Type,Title,Discussion,Action
-0,0.2,Sustain,Technical Persona Alignment,Established "Senior Peer" relationship focusing on systems engineering trade-offs over hobbyist fixes.,Maintain professional terminology and direct technical pushback.
-0,0.2,Sustain,Grounding via Documentation,Using external CSV/Sheets provided a vital anchor for feature numbering and project status.,Perform a "Roadmap Check" at the start of every session.
-0,0.2,Sustain,Adaptive Troubleshooting,Pivoted to a 192.168.1.x neighborhood when the CR1000A firmware blocked custom subnets.,Provide "Ideal" vs. "High-Compatibility" options for high-risk changes.
-0,0.5,Improve,Deliberate Pace (Anti-Hallucination),Prematurely moved to Epic 1/2 before Epic 0 was officially cleared.,Enforce "Mandatory Ready for Next" prompts; do not start new features without DoD clearance.
-0,0.2,Improve,Firmware Risk Assessment,Unexpected vendor sanity checks on the CR1000A delayed network stabilization.,Perform "Pre-Flight Risk Checks" for hardware-specific tasks.
-0,0.5,Improve,Condition Checks (DoD),Epic 0 initially lacked clear verification commands for success criteria.,Codify the "Definition of Done" with specific validation commands (ping/kubectl).
