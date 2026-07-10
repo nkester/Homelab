@@ -18,3 +18,10 @@
 * **Resilience Baseline (The 202-Second Window):** Conducted a hard power-loss test on the Orbi Satellite. The L2 bridge spanning-tree recovery and backhaul re-sync takes approximately **202 seconds**. 
   * *Intra-Cluster Impact:* Zero. Because all nodes terminate on the TL-SG108E switch, Kubernetes API quorum and pod-to-pod traffic remain uninterrupted. Node eviction is not triggered.
   * *External Impact:* The cluster loses reachability to the `10.10.10.1` gateway for 202 seconds, temporarily halting external image pulls, internet egress, and cross-VLAN ingress.
+
+## Feature 1.3: Scalable IP & DNS Schema
+**Status:** Done (with Hardware Constraint)
+**Completion State:**
+* **IPAM Schema Established:** Centralized GitOps source of truth (`infrastructure/networking/README.md`) created, mapping the `10.10.10.0/24` infrastructure, compute, and VIP namespaces.
+* **State Enforcement:** ER605 DHCP MAC Reservations created for the TL-SG108E switch and the three bare-metal nodes (HP, Lenovo, Dell) to prevent namespace collisions.
+* **Hardware Constraint (DNS):** The ER605 standalone firmware lacks conditional DNS forwarding. The requirement to route the `kester.lab` internal domain is deferred. A dedicated DNS resolver (e.g., CoreDNS/AdGuard) will need to be deployed in a future Epic to handle internal ingress routing.
