@@ -29,9 +29,9 @@ Feature,1.1,Logical Network Segmentation (VLAN 10),Isolating the analytic enclav
 Feature,1.2,Wireless Enclave Standoff,Configuring the Orbi mesh system as a dedicated wireless bridge for the lab nodes.,Done,"1. Orbi Base and Satellite assigned static IPs
  2. Satellite Ethernet port provides connectivity to Enclave
  3. Failover/re-sync test passed"
-Feature,1.3,Scalable IP & DNS Schema,Defining static IP ranges and internal DNS forwarding (192.168.1.x/10.10.10.x).,In Progress,"1. IP spreadsheet updated with node/service ranges
+Feature,1.3,Scalable IP & DNS Schema,Defining static IP ranges and internal DNS forwarding (192.168.1.x/10.10.10.x).,Done,"1. IP spreadsheet updated with node/service ranges
  2. Local DNS forwarders configured on ER605"
-Feature,1.4,API Server VIP (kube-vip),Implementing a Virtual IP for Kubernetes control plane high availability.,To Do,"1. Reserved IP (e.g., 10.10.10.10) verified as unused
+Feature,1.4,API Server VIP (kube-vip),Implementing a Virtual IP for Kubernetes control plane high availability.,In Progress,"1. Reserved IP (e.g., 10.10.10.10) verified as unused
  2. BGP or ARP config prepared for Talos"
 Epic,2,Kubernetes Bootstrap (Talos OS),"Deploying a secure, declarative, and immutable OS layer.",To Do,"1. All nodes running Talos OS
  2. Kubernetes API reachable via kubectl
