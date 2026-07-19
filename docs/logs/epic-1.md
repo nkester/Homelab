@@ -24,4 +24,11 @@
 **Completion State:**
 * **IPAM Schema Established:** Centralized GitOps source of truth (`infrastructure/networking/README.md`) created, mapping the `10.10.10.0/24` infrastructure, compute, and VIP namespaces.
 * **State Enforcement:** ER605 DHCP MAC Reservations created for the TL-SG108E switch and the three bare-metal nodes (HP, Lenovo, Dell) to prevent namespace collisions.
-* **Hardware Constraint (DNS):** The ER605 standalone firmware lacks conditional DNS forwarding. The requirement to route the `kester.lab` internal domain is deferred. A dedicated DNS resolver (e.g., CoreDNS/AdGuard) will need to be deployed in a future Epic to handle internal ingress routing.
+* **Hardware Constraint (DNS):** The ER605 standalone firmware lacks conditional DNS forwarding. The requirement to route the `kester.lab` internal domain is deferred. A dedicated DNS resolver (e.g., CoreDNS/AdGuard) will need to be deployed in a future Epic to handle internal ingress routing.  
+
+## Feature 1.4: API Server VIP (kube-vip)
+**Status:** Done  
+**Completion State:**
+* **Network Verification:** Executed ICMP validation against `10.10.10.100`. Returned 100% packet loss, cryptographically verifying the namespace is vacant and the ER605 DHCP reservation is actively preventing collisions.
+* **Configuration Staging:** Declarative Layer 2 ARP bindings for the Talos `machineconfig` were generated. 
+* **Artifact Generation:** To comply with GitOps state management and fulfill the artifact requirement, the `kube-vip` OpenTofu configuration snippet was committed to `infrastructure/bootstrap/README.md`. This stages the exact API parameters required for the OpenTofu provider during the OS bootstrap phase in Epic 2.
