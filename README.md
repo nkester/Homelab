@@ -203,11 +203,11 @@ Legend:
   
       - Validating the Orbi mesh backhaul as a stable bridge for the remote compute nodes.  
 
-  🔵 Feature 1.3: Scalable IP & DNS Schema  
+  ✅ Feature 1.3: Scalable IP & DNS Schema  
   
       - Defining static reservations and DNS forwarders for cluster services.  
       
-  🔲 Feature 1.4: API Server VIP (kube-vip)  
+  🔵 Feature 1.4: API Server VIP (kube-vip)  
   
       - Implementing a Virtual IP for Kubernetes control plane high availability.  
 
