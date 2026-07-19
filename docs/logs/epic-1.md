@@ -1,7 +1,7 @@
 # Epic 1: Hardware & Network Foundation - Execution Log
 
 ## Feature 1.1: Logical Network Segmentation (VLAN 10)
-**Status:** Done
+**Status:** Done  
 **Completion State:**
 * Established the "Analytic Enclave" on `10.10.10.0/24`.
 * **Architectural Pivot (ADR-0002):** Discovered the Orbi RBR50 cannot process 802.1q VLAN tags. Transitioned the Orbi mesh into AP Mode (radios disabled) to act purely as a dedicated Layer 2 Point-to-Point bridge for the cluster backhaul.
@@ -9,7 +9,7 @@
 * **Validation:** Verified DHCP allocation (`10.10.10.x`), internet egress routing, and zero-trust Layer 3 isolation from the personal LAN (`192.168.1.0/24`).
 
 ## Feature 1.2: Wireless Enclave Standoff
-**Status:** Done
+**Status:** Done  
 **Completion State:**
 * **Infrastructure IP Allocation:** Implemented central state management via ER605 DHCP Reservations to assign static IPs to the wireless bridge without hardcoding consumer firmware.
   * Orbi Base: `10.10.10.3`
@@ -20,7 +20,7 @@
   * *External Impact:* The cluster loses reachability to the `10.10.10.1` gateway for 202 seconds, temporarily halting external image pulls, internet egress, and cross-VLAN ingress.
 
 ## Feature 1.3: Scalable IP & DNS Schema
-**Status:** Done (with Hardware Constraint)
+**Status:** Done (with Hardware Constraint)  
 **Completion State:**
 * **IPAM Schema Established:** Centralized GitOps source of truth (`infrastructure/networking/README.md`) created, mapping the `10.10.10.0/24` infrastructure, compute, and VIP namespaces.
 * **State Enforcement:** ER605 DHCP MAC Reservations created for the TL-SG108E switch and the three bare-metal nodes (HP, Lenovo, Dell) to prevent namespace collisions.

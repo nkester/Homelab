@@ -12,9 +12,9 @@
 | Hostname | Role | IP Address | MAC Address | Allocation |
 | :--- | :--- | :--- | :--- | :--- |
 | **ER605** | Gateway | `10.10.10.1` | N/A | Static |
-| **RBR50** | Orbi Base | `10.10.10.3` | [Logged in Router] | DHCP Rsv. |
-| **RBS50** | Orbi Satellite| `10.10.10.4` | [Logged in Router] | DHCP Rsv. |
-| **TL-SG108E** | Switch | `10.10.10.5` | [Logged in Router] | DHCP Rsv. |
+| **RBR50** | Orbi Base | `10.10.10.3` | [Logged in Router] | Static |
+| **RBS50** | Orbi Satellite| `10.10.10.4` | [Logged in Router] | Static |
+| **TL-SG108E** | Switch | `10.10.10.5` | [Logged in Router] | Static |
 
 ### 2.2 Kubernetes Bare-Metal Compute Block
 | Hostname | Role | IP Address | MAC Address | Allocation |
