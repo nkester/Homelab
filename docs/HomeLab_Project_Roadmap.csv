@@ -18,7 +18,7 @@ Feature,0.5,Establish Documentation Scaffolding,"Implement a tiered documentatio
 2. /docs/architecture/ folder established for logical blueprints with a standard template.
 3. /docs/adr/ folder established for singular Architectural Decision Records with one entry of ADR-0001 (Subnet Pivot).
 4. /docs/logs/ folder established for chronological Project/Epic summaries and Epic 0 log is refactored and placed here."
-Epic,1,Hardware & Network Foundation,"Configuring logical isolation, IP schema, and high availability foundations.",In Progress,"1. VLAN 10 isolated and serving DHCP
+Epic,1,Hardware & Network Foundation,"Configuring logical isolation, IP schema, and high availability foundations.",Done,"1. VLAN 10 isolated and serving DHCP
  2. Inter-VLAN routing configured for management
  3. Orbi bridge tested for latency/stability
  4. Kube-VIP address reserved and pingable"
@@ -31,7 +31,7 @@ Feature,1.2,Wireless Enclave Standoff,Configuring the Orbi mesh system as a dedi
  3. Failover/re-sync test passed"
 Feature,1.3,Scalable IP & DNS Schema,Defining static IP ranges and internal DNS forwarding (192.168.1.x/10.10.10.x).,Done,"1. IP spreadsheet updated with node/service ranges
  2. Local DNS forwarders configured on ER605"
-Feature,1.4,API Server VIP (kube-vip),Implementing a Virtual IP for Kubernetes control plane high availability.,In Progress,"1. Reserved IP (e.g., 10.10.10.10) verified as unused
+Feature,1.4,API Server VIP (kube-vip),Implementing a Virtual IP for Kubernetes control plane high availability.,Done,"1. Reserved IP (e.g., 10.10.10.10) verified as unused
  2. BGP or ARP config prepared for Talos"
 Epic,2,Kubernetes Bootstrap (Talos OS),"Deploying a secure, declarative, and immutable OS layer.",To Do,"1. All nodes running Talos OS
  2. Kubernetes API reachable via kubectl
