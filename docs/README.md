@@ -20,7 +20,7 @@ Documentation and configurations are organized by functional layers to isolate f
 ### Layer I: Physical Infrastructure
 *Focus: Hardware inventory, power, and Layer 1/2 connectivity.*
 - **[Hardware & Storage Inventory](./hardware_inventory.csv)**: Detailed Bill of materials for all cluster nodes and networking equipment.
-- **[L1/L2 Topology](./architecture/01-physical-network.md)** (*Planned*): Physical cabling diagram and switch port assignments.
+- **[L1/L2 Topology](./architecture/01-physical-network.md)**: Physical cabling diagram and switch port assignments.
 
 ### Layer II: Logical Network & Provisioning
 *Focus: Immutable OS (Talos), CNI (Cilium), and IP Address Management (IPAM).*
