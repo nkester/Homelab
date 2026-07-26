@@ -26,6 +26,6 @@
 ### 2.3 Kubernetes Virtual IP (VIP) & Routing Blocks
 | Service | Purpose | IP / Range | Manager |
 | :--- | :--- | :--- | :--- |
-| **API Server VIP** | HA Control Plane | `10.10.10.100` | `kube-vip` |
+| **API Server VIP** | HA Control Plane | `10.10.10.10` | `kube-vip` |
 | **DNS / Ingress** | Primary `kester.lab` entry | `10.10.10.101` | Cilium L2 |
 | **LB Pool** | Additional Ingress Services | `10.10.10.102 - .120` | Cilium IPAM |
