@@ -33,16 +33,23 @@ Feature,1.3,Scalable IP & DNS Schema,Defining static IP ranges and internal DNS 
  2. Local DNS forwarders configured on ER605"
 Feature,1.4,API Server VIP (kube-vip),Implementing a Virtual IP for Kubernetes control plane high availability.,Done,"1. Reserved IP (e.g., 10.10.10.10) verified as unused
  2. BGP or ARP config prepared for Talos"
-Epic,2,Kubernetes Bootstrap (Talos OS),"Deploying a secure, declarative, and immutable OS layer.",To Do,"1. All nodes running Talos OS
+Epic,2,Kubernetes Bootstrap (Talos OS),"Deploying a secure, declarative, and immutable OS layer.",In Progress,"1. All nodes running Talos OS
  2. Kubernetes API reachable via kubectl
  3. Control plane HA verified
  4. talosconfig secured"
-Feature,2.1,Node Preparation,"Generating Talos images and flashing hardware (Lenovo, HP, Dell).",To Do,"1. Hardware-specific Talos .raw or .iso images generated
- 2. Nodes flashed and booting into Maintenance mode"
-Feature,2.2,Cluster Provisioning,Initializing the control plane and joining worker nodes via OpenTofu as declarative GitOps.,To Do,"1. Siderolabs/talos provider configured in OpenTofu. (Open sourced Teraform)
-2. Machine configurations generated as declarative Teraform state.
-3. Control plan and workers joined via `tofu apply`."
-Feature,2.3,Cilium CNI Deployment,Deploying eBPF-based networking for the cluster.,To Do,"1. Cilium CLI reports 'OK'
+Feature,2.1,Control Node Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the control node via OpenTofu as declarative Infrastructure as Code (IaC) for the HP",Done,"1. Hardware-specific Talos .iso images generated
+2. Node flashed and booting into Maintenance mode on v1.13.7
+3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.51 and 10.10.10.10. (ping to both IPs is successful) 
+4. talosctl health check of 10.10.10.51 passes and talosctl get members returns the node as a control plane with the appropriate IPs."
+Feature,2.2,Worker Node 1 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 1 via OpenTofu as declarative Infrastructure as Code (IaC) for the Lenovo",In Progress,"1. Hardware-specific Talos .iso images generated
+2. Node flashed and booting into Maintenance mode on v1.13.7
+3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.52. (ping to IP is successful) 
+4. talosctl health check of 10.10.10.52 passes and talosctl get members returns the node as a control plane with the appropriate IP of this node and the control."
+Feature,2.3,Worker Node 2 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell",To Do,"1. Hardware-specific Talos .iso images generated
+2. Node flashed and booting into Maintenance mode on v1.13.7
+3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.53 (ping to IP is successful) 
+4. talosctl health check of 10.10.10.53 passes and talosctl get members returns the node as a worker with the appropriate IP and all other nodes."
+Feature,2.4,Cilium CNI Deployment,Deploying eBPF-based networking for the cluster.,To Do,"1. Cilium CLI reports 'OK'
  2. Hubbell connectivity verified
  3. Pod-to-pod traffic successful"
 Epic,3,GitOps & Analytic Stack,Deploying the management and data layer using the GitOps loop.,To Do,"1. ArgoCD managing all cluster state
