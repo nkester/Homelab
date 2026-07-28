@@ -40,7 +40,8 @@ data "talos_machine_configuration" "controlplane" {
       machine = {
         install = {
           disk = "/dev/sda"
-          image = "ghcr.io/siderolabs/installer:v1.13.7"
+          # Talos v 1.13.7 with extensions: iscsi-tools, util-linux-tools for Longhorn
+          image = "factory.talos.dev/metal-installer/613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245:v1.13.7"
         }
         kubelet = {
           nodeIP = {
@@ -109,7 +110,8 @@ data "talos_machine_configuration" "worker1" {
         install = {
           # Explicitly target the 465.8G ST500DM002-1SB10 HDD
           disk = "/dev/sdc" 
-          image = "ghcr.io/siderolabs/installer:v1.13.7"
+          # Talos v 1.13.7 with extensions: iscsi-tools, util-linux-tools for Longhorn and realtek-firmware for the chipset
+          image = "factory.talos.dev/metal-installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
         }
         kubelet = {
           nodeIP = {
@@ -139,6 +141,60 @@ resource "talos_machine_configuration_apply" "worker1" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker1.machine_configuration
   node                        = "10.10.10.52"
+  
+  # Ensure the control plane is bootstrapped and ready before provisioning workers
+  depends_on = [talos_machine_bootstrap.this] 
+}
+
+# ==========================================
+# Worker Node 2: Dell Inspiron 15R-5537
+# IP: 10.10.10.53
+# ==========================================
+
+data "talos_machine_configuration" "worker2" {
+  cluster_name     = "homelab-cluster"
+  cluster_endpoint = "https://10.10.10.10:6443"
+  machine_type     = "worker"
+  machine_secrets  = talos_machine_secrets.this.machine_secrets
+  talos_version    = "v1.13.7" 
+
+  config_patches = [
+    yamlencode({
+      machine = {
+        install = {
+          # Explicitly target the 931.5G ST1000LM024 HN-M101MBB disk
+          disk = "/dev/sdc" 
+          # Talos v 1.13.7 with extensions: iscsi-tools, util-linux-tools for Longhorn and realtek-firmware for the chipset
+          image = "factory.talos.dev/metal-installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7" 
+        }
+        kubelet = {
+          nodeIP = {
+            validSubnets = ["10.10.10.0/24"]
+          }
+        }
+        network = {
+          interfaces = [
+            {
+              interface = "enp1s0" 
+              addresses = ["10.10.10.53/24"]
+              routes = [
+                {
+                  network = "0.0.0.0/0"
+                  gateway = "10.10.10.1"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    })
+  ]
+}
+
+resource "talos_machine_configuration_apply" "worker2" {
+  client_configuration        = talos_machine_secrets.this.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.worker2.machine_configuration
+  node                        = "10.10.10.53"
   
   # Ensure the control plane is bootstrapped and ready before provisioning workers
   depends_on = [talos_machine_bootstrap.this] 
