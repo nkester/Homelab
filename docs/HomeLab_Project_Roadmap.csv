@@ -41,11 +41,11 @@ Feature,2.1,Control Node Preparation and Provisioning,"Generating Talos image, f
 2. Node flashed and booting into Maintenance mode on v1.13.7
 3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.51 and 10.10.10.10. (ping to both IPs is successful) 
 4. talosctl health check of 10.10.10.51 passes and talosctl get members returns the node as a control plane with the appropriate IPs."
-Feature,2.2,Worker Node 1 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 1 via OpenTofu as declarative Infrastructure as Code (IaC) for the Lenovo",In Progress,"1. Hardware-specific Talos .iso images generated
+Feature,2.2,Worker Node 1 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 1 via OpenTofu as declarative Infrastructure as Code (IaC) for the Lenovo",Done,"1. Hardware-specific Talos .iso images generated
 2. Node flashed and booting into Maintenance mode on v1.13.7
 3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.52. (ping to IP is successful) 
-4. talosctl health check of 10.10.10.52 passes and talosctl get members returns the node as a control plane with the appropriate IP of this node and the control."
-Feature,2.3,Worker Node 2 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell",To Do,"1. Hardware-specific Talos .iso images generated
+4. talosctl health check of 10.10.10.52 passes and talosctl get members returns the node as a worker with the appropriate IP of this node and the control."
+Feature,2.3,Worker Node 2 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell",In Progress,"1. Hardware-specific Talos .iso images generated
 2. Node flashed and booting into Maintenance mode on v1.13.7
 3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.53 (ping to IP is successful) 
 4. talosctl health check of 10.10.10.53 passes and talosctl get members returns the node as a worker with the appropriate IP and all other nodes."

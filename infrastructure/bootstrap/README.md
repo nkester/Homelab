@@ -34,3 +34,5 @@ To provision a node or rebuild the cluster from a bare-metal state:
 4. **Extract Kubernetes Credentials (Post-Bootstrap):**
    `talosctl --nodes 10.10.10.51 kubeconfig ~/.kube/config`
    `chmod 600 ~/.kube/config`
+5. **Check Nodes on the Cluster:**
+   `kubectl get nodes -o wide`
