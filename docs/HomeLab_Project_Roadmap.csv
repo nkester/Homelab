@@ -45,11 +45,11 @@ Feature,2.2,Worker Node 1 Preparation and Provisioning,"Generating Talos image, 
 2. Node flashed and booting into Maintenance mode on v1.13.7
 3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.52. (ping to IP is successful) 
 4. talosctl health check of 10.10.10.52 passes and talosctl get members returns the node as a worker with the appropriate IP of this node and the control."
-Feature,2.3,Worker Node 2 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell",In Progress,"1. Hardware-specific Talos .iso images generated
+Feature,2.3,Worker Node 2 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell",Done,"1. Hardware-specific Talos .iso images generated
 2. Node flashed and booting into Maintenance mode on v1.13.7
 3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.53 (ping to IP is successful) 
 4. talosctl health check of 10.10.10.53 passes and talosctl get members returns the node as a worker with the appropriate IP and all other nodes."
-Feature,2.4,Cilium CNI Deployment,Deploying eBPF-based networking for the cluster.,To Do,"1. Cilium CLI reports 'OK'
+Feature,2.4,Cilium CNI Deployment,Deploying eBPF-based networking for the cluster.,In Progress,"1. Cilium CLI reports 'OK'
  2. Hubbell connectivity verified
  3. Pod-to-pod traffic successful"
 Epic,3,GitOps & Analytic Stack,Deploying the management and data layer using the GitOps loop.,To Do,"1. ArgoCD managing all cluster state

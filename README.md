@@ -96,11 +96,11 @@ Legend:
   
       - Generating Talos image, flashing hardware, and initializing the worker node 1 via OpenTofu as declarative Infrastructure as Code (IaC) for the Lenovo.  
 
-  🔵 Feature 2.3: Worker Node 2 Preparation and Provisioning  
+  ✅ Feature 2.3: Worker Node 2 Preparation and Provisioning  
   
       - Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell.
       
-  🔲 Feature 2.4: Cilium CNI Deployment
+  🔵 Feature 2.4: Cilium CNI Deployment
   
       - Deploying eBPF-based networking for the cluster.
 
