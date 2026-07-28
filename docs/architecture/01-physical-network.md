@@ -78,7 +78,7 @@ graph TD
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Control Plane 1 | HP Compaq Pro 6300 | Intel 82579LM | `eno1` | 10.10.10.51 | Bound to Talos Native VIP (10.10.10.10) |
 | Worker 1 | Lenovo ideacenter 310S | Realtek RTL8111/8168 | `enp2s0` | 10.10.10.52 | `wlan0` explicitly disabled in UEFI |
-| Worker 2 | Dell Inspiron 15R | TBD | TBD | TBD | Pending Feature Provisioning |
+| Worker 2 | Dell Inspiron 15R | Realtek RTL810xE | `enp1s0` | 10.10.10.53 | Intel Wireless 7260 isolated via declarative OS-level interface omission (UEFI disable unavailable). |
 
 ## 4. Resilience & Failure Domains  
 
