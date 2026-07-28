@@ -41,6 +41,9 @@ Legend:
 ✅ Complete: Tested, verified, and merged.  🔵 In Progress: Current active development.
 🔲 Backlog: Planned feature set.
 
+<details>
+<summary>Click here to expand the plan</summary>
+
 ```
 ✅ Epic 0: Project & Environment Stabilization  
 
@@ -157,6 +160,8 @@ Legend:
 
 ```
 
+</details>
+
 # Tools
 
 Since my first attempt at a home lab, Generative AI has emerged and become ubiquitous within the software and analytic development space. To that end, I am approaching this project with the help of Google's Gemini and Anthropic's Claude LLMs. Gemini is my main partner, and account for 95% of the contribution.
@@ -164,6 +169,9 @@ Since my first attempt at a home lab, Generative AI has emerged and become ubiqu
 I developed a custom AI expert Senior Platform Engineer that is experienced with Agile DevOps, GitOps, Kubernetes, and Software Systems Engineering as a Gemini Gem. 
 
 Below are the instructions I used to seed this GEM:  
+
+<details>
+<summary>Click here to expand the GEM Instructions</summary>
 
 ```markdown
 **Role & Persona**
@@ -284,7 +292,11 @@ The user is building an operations research analytics platform on bare-metal har
 
 ```
 
-Additionally, I gave the GEM knowledge of a Google Doc with the hardware specifications I am using, a Google Sheet with the Project Roadmap and status, and a Google Sheet Retrospective. Finally, I gave it the skill to look at my public GitHub repository for this project. 
+</details>
+
+I went through several iterations of how best to deal with the GEM's knowledge bank. Ideally it would have live access to the Google Drive folder where I store the working version of the plan, retrospective, and hardware as well as a live connection to the git repository. I had many issues managing state, overwhelming the LLM's context window, and burning through credits making live connections. 
+
+The more stable approach I found, was to load pertinent data in directly as csv files or directly added files at the start of a chat and I start every feature in a new chat built from the GEM (instructions above). The downside of this is that the LLM does not have full context of my repository and how I am approahing the project.  
 
 # What is Next
 
