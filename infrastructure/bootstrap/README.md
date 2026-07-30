@@ -36,3 +36,12 @@ To provision a node or rebuild the cluster from a bare-metal state:
    `chmod 600 ~/.kube/config`
 5. **Check Nodes on the Cluster:**
    `kubectl get nodes -o wide`
+
+
+## Known Limitations & Operational Guardrails
+
+### 1. Bare-Metal Reprovisioning and Disk Mappings
+Executing a node reset (`talosctl reset`) clears the `STATE` and `EPHEMERAL` partitions. However, rebooting physical bare-metal nodes (specifically the Lenovo and Dell worker nodes) can result in the kernel re-enumerating the block storage devices (e.g., shifting the primary installation drive from `/dev/sdc` to `/dev/sdb`). 
+
+If the drive mapping shifts during a remote reset, the node will fail to initialize the Talos OS correctly and will not enter Maintenance Mode over the network. 
+*   **Resolution:** This requires a physical failover. You must attach a monitor, insert the Talos bootable USB, and manually boot the machine back into Maintenance Mode, query the node with `talosctl get links --nodes <Node IP> --insecure`, update the `main.tf` manifest with the new mount, and apply to allow OpenTofu to push the configuration to the newly enumerated block device.

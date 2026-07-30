@@ -22,6 +22,7 @@ graph TD
 
     subgraph Immutable OS Runtime
         CP & W1 & W2 -->|Kernel Extensions| Ext[iscsi-tools / util-linux-tools / realtek-firmware]
+		CP & W1 & W2 -->|eBPF Datapath| Cilium[Cilium CNI / kube-proxy replacement]
     end
 ```
 
