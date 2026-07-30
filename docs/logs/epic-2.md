@@ -28,20 +28,26 @@ Deployment of the Talos Linux immutable operating system and initialization of t
     * Control (HP): bare-metal, Talos version 1.13.7, amd64, extensions: [siderolabs/iscsi-tools, siderolabs/util-linux-tools], UEFI only bootloader
     * Workers (Lenovo & Dell): bare-metal, Talos version 1.13.7, amd64, extensions: [siderolabs/realtek-firmware, siderolabs/iscsi-tools, siderolabs/util-linux-tools], UEFI only bootloader
   * **Checking Extensions.** To ensure all required extensions exist, apply the `talosctl get extensions` command:
-    * Control Node:
+
+* **Control Node:**  
+
 | NODE | NAMESPACE | TYPE | ID | VERSION | NAME | VERSION |
-|---|---|---|---|---|---|---|
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 10.10.10.51 | runtime | ExtensionStatus | 0 | 1 | iscsi-tools | v0.2.0 |
 | 10.10.10.51 | runtime | ExtensionStatus | 1 | 1 | util-linux-tools | 2.42.2 |
 | 10.10.10.51 | runtime | ExtensionStatus | 2 | 1 | schematic | d30235af7822d8ab9218631278e8cf545cdccb30650607f2211e4f670489587f |  
-    * Worker 1 Node (Lenovo):
+
+  * **Worker 1 Node (Lenovo):**
+
 | NODE | NAMESPACE | TYPE | ID | VERSION | NAME | VERSION |
 |---|---|---|---|---|---|---|
 | 10.10.10.52 | runtime | ExtensionStatus | 0 | 1 | iscsi-tools | v0.2.0 |
 | 10.10.10.52 | runtime | ExtensionStatus | 1 | 1 | realtek-firmware | 20260622 |
 | 10.10.10.52 | runtime | ExtensionStatus | 2 | 1 | util-linux-tools | 2.42.2 |
 | 10.10.10.52 | runtime | ExtensionStatus | 3 | 1 | schematic | b3be65417e75019263b7b4c7831117653b737af5fb6d27f136b562b28cfa3cbb |  
-    * Worker 2 Node (DELL):
+  
+* **Worker 2 Node (DELL):**
+
 | NODE | NAMESPACE | TYPE | ID | VERSION | NAME | VERSION |
 |---|---|---|---|---|---|---|
 | 10.10.10.53 | runtime | ExtensionStatus | 0 | 1 | iscsi-tools | v0.2.0 |

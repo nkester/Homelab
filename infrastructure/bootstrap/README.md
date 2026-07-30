@@ -5,7 +5,8 @@
 ### Architecture & State Management
 This module utilizes OpenTofu to generate deterministic cryptographic material, machine secrets, and YAML configuration patches for the immutable Talos Linux nodes. 
 * **Provider:** `siderolabs/talos` locked to `v0.12.0-alpha.5`.
-* **State:** Local `terraform.tfstate`. **CRITICAL:** State files contain plaintext cryptographic root-of-trust material and are strictly excluded from version control via `.gitignore`.
+* **State:** Local `terraform.tfstate`.  
+* **CRITICAL:** State files contain plaintext cryptographic root-of-trust material and are strictly excluded from version control via `.gitignore`.
 
 ### Hardware Configuration Exceptions
 Talos implicit network configurations are overridden via `config_patches` to ensure high-availability routing and stable DHCP leases.

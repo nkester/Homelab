@@ -1,4 +1,4 @@
-# ADR 0004: Selection of Cilium for CNI and eBPF Datapath
+# ADR-0004: Selection of Cilium for CNI and eBPF Datapath
 
 * **Status:** Accepted
 * **Date:** 2026-07-30
