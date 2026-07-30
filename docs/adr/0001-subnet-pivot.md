@@ -1,8 +1,8 @@
-# ADR 0001: Subnet Pivot to 192.168.1.x
+# ADR-0001: Subnet Pivot to 192.168.1.x
 
-**Status:** Accepted
-**Date:** 2026-04-17
-**Deciders:** NK, GitOps Lab Architect
+* **Status:** Accepted
+* **Date:** 2026-04-17
+* **Author:** Neil Kester
 
 ## Context and Problem Statement
 The original plan was to isolate the lab on a custom subnet. However, the Verizon CR1000A gateway firmware enforces strict sanity checks that prevent the ER605 from operating effectively as a downstream router if the subnets do not align with the gateway's internal expectations for "DMZ" or "Passthrough" modes.
