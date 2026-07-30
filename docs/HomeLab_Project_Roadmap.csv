@@ -1,0 +1,96 @@
+Type,Number,Title,Description,Status,Definition of Done (Success Criteria)
+Epic,0,Project & Environment Stabilization,"Establishing the foundational repo, security, and hardware connectivity.",Done,"1. GitLab to GitHub mirroring functional
+ 2. Subnet aligned to 192.168.1.x and verified
+ 3. Monorepo folder structure initialized
+ 4. Root README.md contains project overview"
+Feature,0.1,Mirror GitLab Project to Github,Automated mirroring of protected branches to public GitHub for portfolio/collaboration.,Done,"1. GitHub repository exists and is public
+ 2. Mirroring push rule configured in GitLab
+ 3. Verified code presence on GitHub after a commit"
+Feature,0.2,Establish Physical Network Structure,Correcting physical cabling (ONT -> ER605 -> CR1000A/Orbi) and subnet alignment.,Done,"1. ONT connected to ER605 WAN
+ 2. ER605 LAN connected to CR1000A WAN and Orbi
+ 3. All devices pingable on 192.168.1.x"
+Feature,0.3,Establish Project File Structure,"Scaffolding the monorepo directories (docs, infrastructure, apps, etc).",Done,"1. /docs, /infrastructure, and /apps directories created
+ 2. Initial .gitignore configured for Kubernetes/GitOps"
+Feature,0.4,Write Introduction Readme,Authoring the professional project overview and roadmap in the root README.md.,Done,"1. Project mission statement written
+ 2. Hardware inventory listed
+ 3. High-level roadmap embedded in Markdown"
+Feature,0.5,Establish Documentation Scaffolding,"Implement a tiered documentation structure separating current state, architectural intent, and decision history.",Done,"1. /docs/README.md initialized with Layered System State structure as a Functional System Manual.
+2. /docs/architecture/ folder established for logical blueprints with a standard template.
+3. /docs/adr/ folder established for singular Architectural Decision Records with one entry of ADR-0001 (Subnet Pivot).
+4. /docs/logs/ folder established for chronological Project/Epic summaries and Epic 0 log is refactored and placed here."
+Epic,1,Hardware & Network Foundation,"Configuring logical isolation, IP schema, and high availability foundations.",Done,"1. VLAN 10 isolated and serving DHCP
+ 2. Inter-VLAN routing configured for management
+ 3. Orbi bridge tested for latency/stability
+ 4. Kube-VIP address reserved and pingable"
+Feature,1.1,Logical Network Segmentation (VLAN 10),Isolating the analytic enclave from the home network using VLANs on the ER605.,Done,"1. VLAN 10 created on ER605 interface
+ 2. DHCP pool 10.10.10.x configured
+ 3. Port 3 PVID set to 10
+ 4. Client on Port 3 receives 10.10.10.x IP"
+Feature,1.2,Wireless Enclave Standoff,Configuring the Orbi mesh system as a dedicated wireless bridge for the lab nodes.,Done,"1. Orbi Base and Satellite assigned static IPs
+ 2. Satellite Ethernet port provides connectivity to Enclave
+ 3. Failover/re-sync test passed"
+Feature,1.3,Scalable IP & DNS Schema,Defining static IP ranges and internal DNS forwarding (192.168.1.x/10.10.10.x).,Done,"1. IP spreadsheet updated with node/service ranges
+ 2. Local DNS forwarders configured on ER605"
+Feature,1.4,API Server VIP (kube-vip),Implementing a Virtual IP for Kubernetes control plane high availability.,Done,"1. Reserved IP (e.g., 10.10.10.10) verified as unused
+ 2. BGP or ARP config prepared for Talos"
+Epic,2,Kubernetes Bootstrap (Talos OS),"Deploying a secure, declarative, and immutable OS layer.",In Progress,"1. All nodes running Talos OS
+ 2. Kubernetes API reachable via kubectl
+ 3. Control plane HA verified
+ 4. talosconfig secured"
+Feature,2.1,Control Node Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the control node via OpenTofu as declarative Infrastructure as Code (IaC) for the HP",Done,"1. Hardware-specific Talos .iso images generated
+2. Node flashed and booting into Maintenance mode on v1.13.7
+3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.51 and 10.10.10.10. (ping to both IPs is successful) 
+4. talosctl health check of 10.10.10.51 passes and talosctl get members returns the node as a control plane with the appropriate IPs."
+Feature,2.2,Worker Node 1 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 1 via OpenTofu as declarative Infrastructure as Code (IaC) for the Lenovo",Done,"1. Hardware-specific Talos .iso images generated
+2. Node flashed and booting into Maintenance mode on v1.13.7
+3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.52. (ping to IP is successful) 
+4. talosctl health check of 10.10.10.52 passes and talosctl get members returns the node as a worker with the appropriate IP of this node and the control."
+Feature,2.3,Worker Node 2 Preparation and Provisioning,"Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell",Done,"1. Hardware-specific Talos .iso images generated
+2. Node flashed and booting into Maintenance mode on v1.13.7
+3. Node is operating on Talos v1.13.7 through OpenTofu in a running state on IP 10.10.10.53 (ping to IP is successful) 
+4. talosctl health check of 10.10.10.53 passes and talosctl get members returns the node as a worker with the appropriate IP and all other nodes."
+Feature,2.4,Cilium CNI Deployment,Deploying eBPF-based networking for the cluster.,In Progress,"1. Cilium CLI reports 'OK'
+ 2. Hubbell connectivity verified
+ 3. Pod-to-pod traffic successful"
+Epic,3,GitOps & Analytic Stack,Deploying the management and data layer using the GitOps loop.,To Do,"1. ArgoCD managing all cluster state
+ 2. Secrets injected via ESO
+ 3. Persistent storage active"
+Feature,3.1,GitOps & Workflow Orchestration (ArgoCD & Argo Workflows).,Installing ArgoCD and Argo Workflows and bootstrapping the 'App-of-Apps' pattern.,To Do,"1. ArgoCD UI reachable
+2. Argo Workflows controller active on the cluster.
+3. Event-driven DAG (Directed Acyclic Graph) capability verified.
+4. Integration established with GitLab CI to mirror AWS Step Functions for automated operations.
+5. App-of-apps pattern syncs without errors"
+Feature,3.2,CNI & Storage Integration,Finalizing network policies and distributed storage for apps.,To Do,"1. Longhorn nodes report healthy
+ 2. StorageClass 'longhorn' set as default"
+Feature,3.3,External Secrets Operator,Automated secret injection from external providers into K8s secrets.,To Do,"1. SecretStore connected to GitLab/Vault
+ 2. Test secret successfully synced to K8s namespace"
+Feature,3.4,Object Storage Foundation (MiniO),Provide S3 API functionality required for enterprise data pipelines and backups (Velero).,To Do,"1. MiniO Operator deployed via ArgoCD.
+2. S3-compatible API reachable via internal NGINX Ingress.
+3. Test bucket provisioned declaratively via YAML/SecretStore."
+Feature,3.5,Serverless Execution (Knative),"Introduce Knative Serving to implement scale-to-zero FaaS capability, mirroring AWS Lambda.",To Do,"1. Knative Serving layer active on cluster.
+2. ""Scale-to-zero"" functionality verified for analytic functions.
+3. Service routing configured for event-driven triggers."
+Epic,4,Core Infrastructure Services,"Shared services for the cluster (Storage, Ingress, Certs).",To Do,"1. Shared services active (Storage, Ingress, Certs)
+ 2. Persistent volume claims binding successfully"
+Feature,4.1,Longhorn Distributed Storage,"Implementing persistent, replicated block storage.",To Do,"1. Longhorn UI shows all disks active
+ 2. Volume replication verified across nodes"
+Feature,4.2,Ingress & cert-manager,Automated SSL/TLS and HTTP routing.,To Do,"1. cert-manager issuing Let's Encrypt certificates
+ 2. Ingress controller routing external traffic"
+Epic,5,Observability & Security Posture,"Implementing monitoring, alerting, hardening, and zero-trust policies.",To Do,"1. Metrics, logs, and traces visible in Grafana
+ 2. Security network policies enforced
+ 3. Scheduled backups verified"
+Feature,5.1,LGTM Stack Deployment,"Loki, Grafana, Tempo, Mimir for full-stack observability.",To Do,"1. Prometheus scraping all targets
+ 2. Grafana dashboards displaying cluster health"
+Feature,5.2,Network Policies,Hardening pod-to-pod communication. Implement default-deny CiliumNetworkPolicies across all namespaces.,To Do,"1. Default-deny policies active
+ 2. Namespace isolation verified via probe"
+Feature,5.3,Velero Disaster Recovery,Automated backups of cluster state and volumes. Configure automated backups to off-site S3/NAS.,To Do,"1. S3/Minio backup target reachable
+ 2. Successful restore of a test namespace"
+Epic,6,Data Layer & Analytics,The 'ORSA' workload layer.,To Do,"1. RStudio/VSCode accessible via ingress
+ 2. Postgres clusters healthy
+ 3. ML workflow foundations verified"
+Feature,6.1,CloudNativePG,Highly available Postgres clusters.,To Do,"1. CNPG operator managing DB instances
+ 2. Database failover test passed"
+Feature,6.2,RStudio & VSCode,Deploy Browser-based development environments (IDEs) as declarative Helm releases.,To Do,"1. User authentication integrated
+ 2. Persistent home directories mounting"
+Feature,6.3,KubeFlow Staging,Deploy core KubeFlow components for ML workflows.,To Do,"1. Kubeflow dashboard accessible
+ 2. Sample training job completes successfully"
