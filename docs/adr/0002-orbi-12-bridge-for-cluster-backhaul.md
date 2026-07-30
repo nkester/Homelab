@@ -1,4 +1,4 @@
-# ADR 0002: Utilization of Orbi Mesh as a Dedicated L2 Bridge for Cluster Backhaul
+# ADR-0002: Utilization of Orbi Mesh as a Dedicated L2 Bridge for Cluster Backhaul
 
 * **Status:** Accepted
 * **Date:** 2026-04-29

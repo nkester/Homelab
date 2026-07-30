@@ -1,2 +1,7 @@
 talosconfig
 secrets.yaml
+
+# OpenTofu/Terraform
+*.tfstate
+**/.terraform/*
+*.tfstate.*
