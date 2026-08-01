@@ -50,16 +50,16 @@ Phase 2: OpenTofu Declarative IaC (DoD 3)
 4. Apply State: Execute tofu plan and tofu apply to push the declarative configuration. Talos will write to /dev/sda, reboot, and transition to a running state.
 Feature 2.3: Worker Node 2 Preparation and Provisioning
 Phase 1: Hardware & Image Preparation (DoD 1 & 2)
-* System Extension Audit: The Realtek RTL810xE may require explicit kernel extensions (e.g., siderolabs/realtek-r8152) if the upstream Talos kernel lacks driver support during initial boot.
-* Network Isolation: Talos requires reliable wired networking. The Intel Wireless 7260 must be disabled via the Dell UEFI/BIOS to prevent talos-networkd from attempting to route metrics across an unstable backhaul.
-* Boot to Maintenance Mode: Generate and flash the v1.13.7 Talos ISO, boot the Dell hardware, and allow it to initialize into Maintenance Mode.
+1. System Extension Audit: The Realtek RTL810xE may require explicit kernel extensions (e.g., siderolabs/realtek-r8152) if the upstream Talos kernel lacks driver support during initial boot.
+2. Network Isolation: Talos requires reliable wired networking. The Intel Wireless 7260 must be disabled via the Dell UEFI/BIOS to prevent talos-networkd from attempting to route metrics across an unstable backhaul.
+3. Boot to Maintenance Mode: Generate and flash the v1.13.7 Talos ISO, boot the Dell hardware, and allow it to initialize into Maintenance Mode.
 Phase 2: OpenTofu Declarative IaC (DoD 3)
-* Manifest Integration: Append data "talos_machine_configuration" "worker2" and resource "talos_machine_configuration_apply" "worker2" to the existing OpenTofu state.
-* Configuration Patch: Target the 931.5G ST1000LM024 HDD at /dev/sda for the Talos installation to ensure it does not write to ephemeral loop devices. Assign the static IP 10.10.10.53 and map it to the logical interface enumerated for the Realtek NIC.
-* Apply State: Execute tofu plan and tofu apply to push the declarative machine configuration and transition the node to a running state.
+1. Manifest Integration: Append data "talos_machine_configuration" "worker2" and resource "talos_machine_configuration_apply" "worker2" to the existing OpenTofu state.
+2. Configuration Patch: Target the 931.5G ST1000LM024 HDD at /dev/sda for the Talos installation to ensure it does not write to ephemeral loop devices. Assign the static IP 10.10.10.53 and map it to the logical interface enumerated for the Realtek NIC.
+3. Apply State: Execute tofu plan and tofu apply to push the declarative machine configuration and transition the node to a running state.
 Phase 3: Validation (DoD 3 & 4)
-* Validate network routing via ICMP ping to 10.10.10.53.
-* Validate cluster quorum via talosctl health --nodes 10.10.10.53 and talosctl get members.
+1. Validate network routing via ICMP ping to 10.10.10.53.
+2. Validate cluster quorum via talosctl health --nodes 10.10.10.53 and talosctl get members.
 
 
 Feature 2.4: Cilium CNI Deployment
@@ -76,3 +76,36 @@ Phase 2: Deployment & GitOps Integration
 Phase 3: Validation (DoD 3 & 4)
 1. Execute `cilium status` via `talosctl` or `kubectl` exec to confirm eBPF map compilation and datapath health.
 2. Validate inter-node pod connectivity and DNS resolution across the cluster.
+
+
+Epic 3
+
+
+Feature 3.1: GitOps & Workflow Orchestration (ArgoCD & Argo Workflows)
+Phase 1: ArgoCD Installation & Bootstrapping (DoD 1 & 5)
+1. Declarative Manifest Preparation: Draft standard ArgoCD installation manifests / Helm chart values targeting namespace argocd.
+2. App-of-Apps Pattern Bootstrap:
+3. Create argocd/root-app.yaml as the parent application managing sub-applications across /infrastructure and /apps.
+4. Configure repository syncing pointing to https://github.com/nkester/homelab or local GitLab origin.
+5. Deployment Execution: Deploy ArgoCD via declarative manifests to the cluster.
+6. UI Reachability Check: Expose and verify ArgoCD UI reachability (DoD 1).
+
+
+Phase 2: Argo Workflows Installation & DAG Verification (DoD 2 & 3)
+1. Controller Manifest Preparation: Define Argo Workflows controller and server manifests under GitOps management via ArgoCD (argocd/argo-workflows.yaml).
+2. Controller Activation: Sync and deploy Argo Workflows in argo-workflows namespace (DoD 2).
+3. Event-Driven DAG Verification:
+4. Author a sample DAG workflow manifest (examples/test-dag-workflow.yaml) establishing step dependencies (Directed Acyclic Graph).
+5. Submit and execute the DAG workflow to verify orchestration capability (DoD 3).
+
+
+Phase 3: GitLab CI Integration & AWS Step Functions Parity (DoD 4)
+1. Webhook / API Trigger Setup: Configure ServiceAccount / API tokens or webhook triggers enabling external pipeline orchestration.
+2. GitLab CI Pipeline Mirroring:
+3. Create a test .gitlab-ci.yml pipeline configuration that triggers an Argo Workflows execution upon pipeline events.
+4. Validate end-to-end execution flow mimicking cloud-native state machine workflows (DoD 4).
+
+
+Phase 4: Validation & Agile DoD Audit (DoD 1–5)
+1. Empirical Validation Commands: Execute exact CLI checks to confirm all 5 success criteria.
+2. Documentation & Action Plan Update: Update ./docs/Action Plan.txt and project logs before closing out the feature.
