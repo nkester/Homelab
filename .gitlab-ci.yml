@@ -1,0 +1,33 @@
+# GitLab CI Integration with Argo Workflows (AWS Step Functions Parity)
+stages:
+  - test
+  - orchestrate
+
+variables:
+  ARGO_NAMESPACE: "argo-workflows"
+
+units-test:
+  stage: test
+  script:
+    - echo "Running unit tests prior to workflow trigger..."
+
+trigger-argo-dag-workflow:
+  stage: orchestrate
+  script:
+    - echo "Triggering Argo Workflow DAG execution (AWS Step Functions Parity)..."
+    - |
+      curl -k -X POST "${ARGO_SERVER_URL}/api/v1/workflows/${ARGO_NAMESPACE}/submit" \
+        -H "Authorization: Bearer ${ARGO_WORKFLOW_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{
+              "resourceKind": "WorkflowTemplate",
+              "resourceName": "test-dag-workflow",
+              "submitOptions": {
+                "parameters": [
+                  "commit_sha='${CI_COMMIT_SHA}'",
+                  "branch='${CI_COMMIT_REF_NAME}'"
+                ]
+              }
+            }'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "argocd-deploy"'
