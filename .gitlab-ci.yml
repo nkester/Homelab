@@ -21,7 +21,7 @@ trigger-argo-dag-workflow:
         -H "Content-Type: application/json" \
         -d '{
               "resourceKind": "WorkflowTemplate",
-              "resourceName": "test-dag-workflow",
+              "resourceName": "dag-workflow",
               "submitOptions": {
                 "parameters": [
                   "commit_sha='${CI_COMMIT_SHA}'",

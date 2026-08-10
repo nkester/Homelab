@@ -52,9 +52,9 @@ This platform replicates that pattern on bare-metal Kubernetes using **GitLab CI
 | AWS Cloud Pattern | Bare-Metal Homelab Equivalent |
 | :--- | :--- |
 | GitLab CI / CodePipeline job | GitLab CI pipeline stage |
-| AWS Step Functions state machine | Argo Workflows DAG `Workflow` resource |
+| AWS Step Functions state machine | Argo `WorkflowTemplate` (`dag-workflow`) |
 | Lambda functions / ECS tasks (steps) | Ephemeral Kubernetes pod templates (DAG task nodes) |
-| Step Functions execution trigger (API call) | `curl` POST to Argo Workflows REST API (`/api/v1/workflows/submit`) |
+| Step Functions execution trigger (API call) | `curl` POST to Argo Workflows REST API (`/api/v1/workflows/argo-workflows/submit`) |
 | Step Functions IAM role | Kubernetes `ServiceAccount` + `Role` + `RoleBinding` (`gitlab-ci-runner`) |
 
 ### Execution Pattern

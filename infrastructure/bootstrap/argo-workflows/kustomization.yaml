@@ -6,4 +6,5 @@ namespace: argo-workflows
 resources:
   - https://github.com/argoproj/argo-workflows/releases/download/v3.5.4/quick-start-minimal.yaml
   - gitlab-runner-rbac.yaml
+  - dag-workflow-template.yaml
 
