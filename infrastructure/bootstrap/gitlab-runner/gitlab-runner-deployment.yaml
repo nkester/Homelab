@@ -48,6 +48,7 @@ data:
     [[runners]]
       name = "homelab-k8s-runner"
       url = "https://gitlab.com/"
+      token = "${RUNNER_TOKEN}"
       executor = "kubernetes"
       environment = ["FF_KUBERNETES_HONOR_ENTRYPOINT=false"]
       [runners.custom_build_dir]
@@ -89,7 +90,7 @@ spec:
           env:
             - name: CI_SERVER_URL
               value: "https://gitlab.com/"
-            - name: REGISTRATION_TOKEN
+            - name: RUNNER_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: gitlab-runner-secret
