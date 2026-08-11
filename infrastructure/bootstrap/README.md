@@ -61,9 +61,9 @@ This bootstrap layer sits at **Plane 1** — the lowest abstraction in the platf
 │  ArgoCD → Argo Workflows, RStudio, VSCode, CloudNativePG        │
 │  ── Kubernetes manages pod lifecycle, scaling, reconciliation ── │
 ├─────────────────────────────────────────────────────────────────┤
-│  TIER 3: System Services                                        │
-│  ArgoCD → Cilium (CNI), Longhorn (CSI), NGINX Ingress           │
-│  ── Kubernetes manages CNI, CSI, Ingress state ─────────────── │
+│  TIER 3: System Services & Enclave Agents                       │
+│  ArgoCD → Cilium (CNI), Longhorn (CSI), GitLab Runner           │
+│  ── Kubernetes manages CNI, CSI, Ingress & runner pod state ─── │
 ├─────────────────────────────────────────────────────────────────┤
 │  TIER 2: Kubernetes Control Plane                               │
 │  kube-apiserver, etcd, kubelet, kube-proxy                      │

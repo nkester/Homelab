@@ -10,9 +10,9 @@ To prevent configuration drift and operational conflation, the platform enforces
 
 ```mermaid
 graph TD
-    subgraph Tier1 ["Tier 1: GitLab & GitLab CI (Source & CI)"]
+    subgraph Tier1 ["Tier 1: GitLab & Local Enclave Runner"]
         GitRepo["Git Repository<br/>(Source of Truth)"]
-        CIRunner["GitLab CI Pipeline<br/>(Test, Build, Lint)"]
+        LocalRunner["In-Cluster GitLab Runner<br/>(VLAN 10 Pod)"]
     end
 
     subgraph Tier2 ["Tier 2: ArgoCD (Continuous Delivery & GitOps)"]
@@ -25,7 +25,8 @@ graph TD
 
     GitRepo -->|1. Sync Manifests| ArgoCDController
     ArgoCDController -->|2. Reconcile Infrastructure| ArgoWFController
-    CIRunner -->|3. Trigger Compute DAG via API| ArgoWFController
+    GitRepo ==>|3. Outbound Poll| LocalRunner
+    LocalRunner -->|4. Trigger Compute DAG via REST API| ArgoWFController
 ```
 
 ---
