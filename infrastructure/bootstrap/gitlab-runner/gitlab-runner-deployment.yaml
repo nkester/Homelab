@@ -86,7 +86,11 @@ spec:
         - name: gitlab-runner
           image: gitlab/gitlab-runner:alpine-v16.11.0
           imagePullPolicy: Always
-          command: ["gitlab-runner", "run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              sed "s|\${RUNNER_TOKEN}|${RUNNER_TOKEN}|g" /config-template/config.toml > /etc/gitlab-runner/config.toml
+              exec gitlab-runner run --working-directory=/home/gitlab-runner
           env:
             - name: CI_SERVER_URL
               value: "https://gitlab.com/"
@@ -100,14 +104,17 @@ spec:
             - name: RUNNER_EXECUTOR
               value: "kubernetes"
           volumeMounts:
-            - name: config-volume
-              mountPath: /etc/gitlab-runner/config.toml
-              subPath: config.toml
+            - name: config-template
+              mountPath: /config-template
+            - name: config-dir
+              mountPath: /etc/gitlab-runner
             - name: init-volume
               mountPath: /home/gitlab-runner
       volumes:
-        - name: config-volume
+        - name: config-template
           configMap:
             name: gitlab-runner-config
+        - name: config-dir
+          emptyDir: {}
         - name: init-volume
           emptyDir: {}
