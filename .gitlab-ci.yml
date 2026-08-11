@@ -40,5 +40,8 @@ trigger-argo-dag-workflow:
                 ]
               }
             }'
+  tags:
+    - homelab-runner
   rules:
     - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "argocd-deploy"'
+
