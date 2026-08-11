@@ -85,7 +85,7 @@ spec:
         - name: gitlab-runner
           image: gitlab/gitlab-runner:alpine-v16.11.0
           imagePullPolicy: Always
-          command: ["/usr/bin/entrypoint", "run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
+          command: ["gitlab-runner", "run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
           env:
             - name: CI_SERVER_URL
               value: "https://gitlab.com/"
@@ -100,7 +100,8 @@ spec:
               value: "kubernetes"
           volumeMounts:
             - name: config-volume
-              mountPath: /etc/gitlab-runner
+              mountPath: /etc/gitlab-runner/config.toml
+              subPath: config.toml
             - name: init-volume
               mountPath: /home/gitlab-runner
       volumes:
