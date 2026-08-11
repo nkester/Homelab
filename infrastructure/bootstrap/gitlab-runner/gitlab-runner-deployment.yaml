@@ -10,7 +10,7 @@ metadata:
   name: gitlab-runner-role
 rules:
   - apiGroups: [""]
-    resources: ["pods", "pods/exec", "pods/log", "services", "secrets", "configmaps"]
+    resources: ["pods", "pods/attach", "pods/exec", "pods/log", "pods/status", "services", "secrets", "configmaps", "events"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["apps"]
     resources: ["deployments", "statefulsets"]
