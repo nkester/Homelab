@@ -5,6 +5,7 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -16,6 +17,11 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argo-workflows
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
   syncPolicy:
     automated:
       prune: true
@@ -23,3 +29,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+
