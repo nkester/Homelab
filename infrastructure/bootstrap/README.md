@@ -1,4 +1,4 @@
-# Purpose: Talos machine configs (templates)
+# Infrastructure Bootstrap Layer (`/infrastructure/bootstrap`)
 
 ## Talos OS Bootstrap Requirements
 
@@ -46,3 +46,119 @@ Executing a node reset (`talosctl reset`) clears the `STATE` and `EPHEMERAL` par
 
 If the drive mapping shifts during a remote reset, the node will fail to initialize the Talos OS correctly and will not enter Maintenance Mode over the network. 
 *   **Resolution:** This requires a physical failover. You must attach a monitor, insert the Talos bootable USB, and manually boot the machine back into Maintenance Mode, query the node with `talosctl get links --nodes <Node IP> --insecure`, update the `main.tf` manifest with the new mount, and apply to allow OpenTofu to push the configuration to the newly enumerated block device.
+
+---
+
+## Platform Architecture: Full Stack Layering
+
+This bootstrap layer sits at **Plane 1** — the lowest abstraction in the platform. Understanding the full 4-tier stack and its two independent state planes is essential to knowing the correct tool for each class of change.
+
+### 4-Tier Platform Stack
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  TIER 4: Workloads                                              │
+│  ArgoCD → Argo Workflows, RStudio, VSCode, CloudNativePG        │
+│  ── Kubernetes manages pod lifecycle, scaling, reconciliation ── │
+├─────────────────────────────────────────────────────────────────┤
+│  TIER 3: System Services & Enclave Agents                       │
+│  ArgoCD → Cilium (CNI), Longhorn (CSI), GitLab Runner           │
+│  ── Kubernetes manages CNI, CSI, Ingress & runner pod state ─── │
+├─────────────────────────────────────────────────────────────────┤
+│  TIER 2: Kubernetes Control Plane                               │
+│  kube-apiserver, etcd, kubelet, kube-proxy                      │
+│  ── Running as a native construct WITHIN Talos OS ────────────  │
+├─────────────────────────────────────────────────────────────────┤
+│  TIER 1: Host OS & Physical Layer  ◄── THIS DIRECTORY           │
+│  Talos Linux + OpenTofu (siderolabs/talos provider)             │
+│  ── ArgoCD CANNOT see or manage this layer ────────────────── │
+│  ── OpenTofu + talosctl are the ONLY state managers here ─────  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## The Two Planes of State Management
+
+The platform enforces a strict boundary between two **independent state planes**. Understanding this boundary defines the correct tool for each class of change and prevents operational conflation.
+
+### Plane 1: OS & Infrastructure Layer (THIS LAYER — OpenTofu + Talos OS)
+
+**Managed by:** OpenTofu (`siderolabs/talos` provider) + `talosctl`  
+**Scope:** Physical nodes, Talos OS lifecycle, Kubernetes control plane bootstrap, machine configuration.
+
+**Key properties:**
+* **ArgoCD cannot see or manage this layer.** ArgoCD speaks exclusively to the Kubernetes API (`kube-apiserver`). It has zero visibility below that — no access to the host OS, kernel, disk, NIC firmware, or systemd units.
+* **Talos is immutable.** It exposes no SSH surface. All configuration is applied exclusively via the Talos Machine API (`talosctl`), driven by OpenTofu declarative state.
+* **`terraform.tfstate`** is the source of truth for what was applied to each physical node. It tracks node versions, machine configurations, and bootstrap state.
+
+**OS Lifecycle Management — Current vs. Mature GitOps Approach:**  
+In the future, we will work to adopt the Mature GitOps Approach.
+
+| Scenario | Current Approach | Mature GitOps Approach |
+| :--- | :--- | :--- |
+| Initial node provisioning | Manual `tofu apply` from terminal | GitLab CI pipeline: `tofu apply` on merge to `main` |
+| Talos OS version upgrade | Update image tag in `main.tf` → `tofu apply` | GitLab CI pipeline: PR review of `tofu plan`, auto-apply on approval |
+| Kubernetes version bump | Update K8s version field → `tofu apply` | GitLab CI: version field change triggers plan diff as MR artifact |
+| Add a new worker node | Add new resource block → `tofu apply` | PR into `main` triggers CI with `tofu plan` output for review |
+
+> [!NOTE]
+> Running `tofu apply` directly from the terminal is correct and GitOps-compliant as long as `main.tf` is committed to Git before applying. Pipeline automation of `tofu apply` is a future maturity objective.
+
+---
+
+### Plane 2: Kubernetes Application Layer (ArgoCD + Argo Workflows)
+
+**Managed by:** ArgoCD (via GitOps sync from the active branch)  
+**Scope:** Everything the `kube-apiserver` manages — workloads, services, networking policies, storage claims, RBAC, and operators.
+
+**Key properties:**
+* ArgoCD reconciles K8s manifests committed to Git against live cluster state.
+* Argo Workflows executes ephemeral compute DAGs (data processing, ML pipelines, ETL) as a K8s-native workload engine.
+* Neither tool can modify the host OS, kernel modules, or Talos machine configuration.
+
+---
+
+### The Intersection: GitLab CI as the Cross-Plane Orchestrator
+
+GitLab CI is the **only tool in the stack that can coordinate operations across both planes** in a single automated pipeline:
+
+```
+Git commit pushed to GitLab
+         │
+         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  GitLab CI Pipeline                                             │
+│                                                                 │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │  Plane 1 Job: tofu plan / tofu apply                       │ │
+│  │  → Targets Talos Machine API                               │ │
+│  │  → Manages Node OS version, K8s bootstrap, MachineConfig  │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │  Plane 2 Job: Commit updated manifests to argocd-deploy    │ │
+│  │  → ArgoCD detects commit, reconciles cluster workload state │ │
+│  │  → Argo Workflows API triggered for compute DAG execution  │ │
+│  └────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### State Verification Commands Per Plane
+
+```bash
+# Plane 1: Verify OS and node state (Talos)
+talosctl health --nodes 10.10.10.51,10.10.10.52,10.10.10.53
+talosctl get members
+
+# Plane 1: Verify OpenTofu drift (IaC)
+tofu plan   # Reports any delta between main.tf and live Talos API state
+
+# Plane 2: Verify ArgoCD sync state (Kubernetes)
+kubectl get application -n argocd
+
+# Plane 2: Verify Argo Workflows controller health
+kubectl get pods -n argo-workflows
+```

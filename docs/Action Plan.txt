@@ -1,0 +1,115 @@
+﻿Epic 0
+Feature 0.5
+Phase 1: Formalize Architectural Governance (/docs/adr/)
+We must capture the "Why" before the "What."
+1. Initialize ADR Directory: Create /docs/adr/README.md to explain the ADR process (based on the Mygrove/ADR standard).
+2. Draft ADR-0001 (Subnet Pivot): Document the technical justification for shifting the ER605 to the 192.168.1.x neighborhood.
+   * Context: Vendor firmware limitations on the CR1000A.
+   * Decision: Pivot the lab subnet to match the ISP gateway's hardcoded constraints.
+   * Consequences: Simplified routing, avoidance of double-NAT issues, and alignment with Talos's static IP requirements.
+Phase 2: Define System Modeling Standards (/docs/architecture/)
+We will establish a standardized blueprint template to ensure all future components (Cilium, Longhorn, etc.) are documented with technical parity.
+1. Create Architecture Template: Establish 00-template.md covering:
+   * Logical View: Component interactions.
+   * Physical View: Node placement and hardware constraints.
+   * Data Flow: Traffic ingress/egress patterns (eBPF/Cilium focus).
+   * Failure Domains: Impact of node or disk failure.
+Phase 3: Narrative Log Refactoring (/docs/logs/)
+Transform the roadmap's status updates into an engineering journal.
+1. Initialize Log Directory: Create /docs/logs/README.md.
+2. Refactor Epic 0 Log: Extract data from the "Project & Environment Stabilization" roadmap and the Retrospective CSV to create a chronological record of the hardware assembly and network troubleshooting phases.
+Phase 4: Construct the Functional System Manual (/docs/README.md)
+The "Glue" that provides the entry point for the entire platform documentation.
+1. Define Layered System State: Organize documentation links by abstraction layer:
+   * Layer 0 (Hardware/L1): Physical Inventory, Cabling.
+   * Layer 1 (Provisioning/OS): Talos configurations, MachineConfigs.
+   * Layer 2 (System Services): CNI, CSI, Ingress.
+   * Layer 3 (Workloads): ORSA Analytics, Databases.
+Phase 5: Verification and Alignment
+1. Link Integrity Check: Ensure all relative Markdown links between the root README, /docs/README.md, and the sub-directories are functional.
+2. DoD Audit: Verify against the roadmap success criteria.
+
+
+Epic 1
+Feature 1.1: Logical Network Segmentation (VLAN 10)
+
+
+Feature 1.2: Wireless Enclave Standoff
+
+
+Epic 2
+Feature 2.2: Worker Node 1 Preparation and Provisioning
+Phase 1: Hardware & Image Preparation (DoD 1 & 2)
+1. System Extension Audit: The Lenovo ideacenter relies on a Realtek RTL8111/8168 PCI Express Gigabit Ethernet Controller. This NIC is typically supported by the upstream Talos kernel, but we will utilize factory.talos.dev (or the Sidero SchedMD API) to generate a v1.13.7 ISO, injecting the siderolabs/realtek-r8152 extension if dmesg flags missing firmware during early boot.
+2. Network Isolation: Talos strictly expects reliable wired networking. The Intel Dual Band Wireless-AC 3165 adapter will be disabled in the Lenovo UEFI/BIOS to prevent talos-networkd from attempting to route metrics or pull images over an unstable wireless bridge.
+3. Boot to Maintenance Mode: Flash the generated .iso to media. Boot the Lenovo node and allow it to initialize into Maintenance Mode.
+Phase 2: OpenTofu Declarative IaC (DoD 3)
+1. Provider Initialization: Configure the siderolabs/talos OpenTofu provider in the repository's infrastructure directory.
+2. Machine Secrets & Config: Generate or extract the existing cluster machine secrets. Define a talos_machine_configuration_apply resource targeting IP 10.10.10.52.
+3. Storage Targeting: The Lenovo node possesses a 465.8G ST500DM002-1SB10 HDD (/dev/sda). The OpenTofu Talos machine configuration patch will explicitly target /dev/sda as the installation disk to ensure the OS installs to the persistent disk rather than ephemeral memory.
+4. Apply State: Execute tofu plan and tofu apply to push the declarative configuration. Talos will write to /dev/sda, reboot, and transition to a running state.
+Feature 2.3: Worker Node 2 Preparation and Provisioning
+Phase 1: Hardware & Image Preparation (DoD 1 & 2)
+1. System Extension Audit: The Realtek RTL810xE may require explicit kernel extensions (e.g., siderolabs/realtek-r8152) if the upstream Talos kernel lacks driver support during initial boot.
+2. Network Isolation: Talos requires reliable wired networking. The Intel Wireless 7260 must be disabled via the Dell UEFI/BIOS to prevent talos-networkd from attempting to route metrics across an unstable backhaul.
+3. Boot to Maintenance Mode: Generate and flash the v1.13.7 Talos ISO, boot the Dell hardware, and allow it to initialize into Maintenance Mode.
+Phase 2: OpenTofu Declarative IaC (DoD 3)
+1. Manifest Integration: Append data "talos_machine_configuration" "worker2" and resource "talos_machine_configuration_apply" "worker2" to the existing OpenTofu state.
+2. Configuration Patch: Target the 931.5G ST1000LM024 HDD at /dev/sda for the Talos installation to ensure it does not write to ephemeral loop devices. Assign the static IP 10.10.10.53 and map it to the logical interface enumerated for the Realtek NIC.
+3. Apply State: Execute tofu plan and tofu apply to push the declarative machine configuration and transition the node to a running state.
+Phase 3: Validation (DoD 3 & 4)
+1. Validate network routing via ICMP ping to 10.10.10.53.
+2. Validate cluster quorum via talosctl health --nodes 10.10.10.53 and talosctl get members.
+
+
+Feature 2.4: Cilium CNI Deployment
+Phase 1: Architecture & Helm Values Preparation
+1. Define Cilium HelmRelease/Manifest: Configure native-routing, eBPF acceleration, and kube-proxy replacement parameters tailored to Talos Linux.
+2. IPAM Configuration: Align pod CIDR allocations with the cluster network topology (`10.10.10.0/24`).
+
+
+Phase 2: Deployment & GitOps Integration
+1. Apply Configuration: Push Cilium manifests into the cluster infrastructure layer.
+2. Verify Pod Health: Ensure DaemonSet pods initialize correctly across control plane and worker nodes without interface collision.
+
+
+Phase 3: Validation (DoD 3 & 4)
+1. Execute `cilium status` via `talosctl` or `kubectl` exec to confirm eBPF map compilation and datapath health.
+2. Validate inter-node pod connectivity and DNS resolution across the cluster.
+
+
+Epic 3
+
+
+Feature 3.1: GitOps & Workflow Orchestration (ArgoCD & Argo Workflows)
+Phase 1: ArgoCD Installation & Bootstrapping (DoD 1 & 5)
+1. Declarative Manifest Preparation: Draft standard ArgoCD installation manifests / Helm chart values targeting namespace argocd.
+2. App-of-Apps Pattern Bootstrap:
+3. Create argocd/root-app.yaml as the parent application managing sub-applications across /infrastructure and /apps.
+4. Configure repository syncing pointing to https://github.com/nkester/homelab or local GitLab origin.
+5. Deployment Execution: Deploy ArgoCD via declarative manifests to the cluster.
+6. UI Reachability Check: Expose and verify ArgoCD UI reachability (DoD 1).
+
+
+Phase 2: Argo Workflows Installation & DAG Verification (DoD 2 & 3)
+1. Controller Manifest Preparation: Define Argo Workflows controller and server manifests under GitOps management via ArgoCD (argocd/argo-workflows.yaml).
+2. Controller Activation: Sync and deploy Argo Workflows in argo-workflows namespace (DoD 2).
+3. Event-Driven DAG Verification:
+4. Author a sample DAG workflow manifest (examples/test-dag-workflow.yaml) establishing step dependencies (Directed Acyclic Graph).
+5. Submit and execute the DAG workflow to verify orchestration capability (DoD 3).
+
+
+Phase 3: GitLab CI Integration & AWS Step Functions Parity (DoD 4)
+1. Webhook / API Trigger Setup: Configure ServiceAccount / API tokens enabling external pipeline orchestration.
+2. In-Cluster GitLab Runner Agent Deployment (ADR-0005): Deploy gitlab-runner in namespace gitlab-runner under ArgoCD management for enclave L2/L3 REST API submittal.
+3. GitLab CI Pipeline Mirroring: Update .gitlab-ci.yml with tags: [homelab-runner] to trigger Argo Workflows REST API submit endpoint upon pipeline events.
+4. Validate end-to-end execution flow mimicking cloud-native state machine workflows (DoD 4) [VERIFIED].
+
+
+Phase 4: Validation & Agile DoD Audit (DoD 1–5)
+1. Empirical Validation Commands: Execute exact CLI checks to confirm all 5 success criteria [PASSED].
+2. Documentation & Action Plan Update: Created ADR-0005, 03-gitops-and-orchestration.md, epic-3.md, and updated project logs.
+Feature 3.2: CNI & Storage Integration (Longhorn & Network Policies)
+Phase 1: Architecture & Storage Readiness Audit (DoD 1 & 2)
+1. Pre-flight verification of Talos OS storage kernel extensions (iscsi-tools, util-linux-tools).
+2. Author declarative Longhorn storage manifests under GitOps management via ArgoCD (argocd/apps/longhorn.yaml).

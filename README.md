@@ -11,25 +11,28 @@ It's protected branches are mirrored to my public GitHub repository here: https:
 Below is the folder structure for the project:
 
 ```text
-/
-├── apps/                   # The "Workload" layer
-│   ├── analytics/          # RStudio, VSCode, KubeFlow manifests
-│   └── database/           # CloudNativePG configurations
-├── argocd/                 # The "Controller" layer (App-of-Apps manifests)
-├── docs/                   # The "Commentary" layer
-│   ├── adr/                # Architectural Decision Records (The "Why")
-│   ├── architecture/       # Mermaid/Python diagrams and technical deep-dives
-│   └── logs/               # Chronological project logs and epic summaries
-├── .gitlab/                # CI/CD pipelines (for linting and validation)
-├── infrastructure/         # The "Platform" layer (Cluster-wide services)
-│   ├── bootstrap/          # Talos machine configs (templates)
-│   ├── networking/         # Cilium and Ingress manifests
-│   └── storage/            # Longhorn configuration
-└── scripts/                # Helper scripts for talosctl or maintenance
+.
+├── apps                    # The "Workload" layer
+│   ├── analytics           # RStudio, VSCode, KubeFlow manifests
+│   └── database            # CloudNativePG configurations
+├── argocd                  # The "Controller" layer (App-of-Apps manifests)
+│   └── apps                # ArgoCD App-of-Apps manifests
+├── docs                    # The "Commentary" layer
+│   ├── adr                 # Architectural Decision Records (The "Why")
+│   ├── architecture        # Mermaid/Python diagrams and technical deep-dives
+│   └── logs                # Chronological project logs and epic summaries
+├── infrastructure          # The "Platform" layer (Cluster-wide services)  
+│   ├── bootstrap           # Talos machine configs (templates)
+│   │   ├── argo-workflows  # Argo Workflows manifests
+│   │   └── gitlab-runner   # GitLab Runner manifests
+│   ├── networking          # Cilium and Ingress manifests
+│   └── storage             # Longhorn configuration
+└── scripts                 # Helper scripts for talosctl or maintenance
+
 ```
 # The Plan
 
-In conjunction with the Gemini GEM described above, I developed an initial project plan to guide my development and give the GEM an understanding of the approach. The epic and feature list and the status of each effort are listed below. I will update these as they evolve.
+In conjunction with a Gemini GEM, I developed an initial project plan to guide my development and give the GEM an understanding of the approach. The epic and feature list and the status of each effort are listed below. I will update these as they evolve.
 
 As the project progresses, I will create a tag for each Epic as it is merged into the `Homelab 2026` branch so we can step back in time.
 
@@ -86,7 +89,7 @@ Legend:
   
       - Implementing a Virtual IP for Kubernetes control plane high availability.  
 
-🔵 Epic 2: Kubernetes Bootstrap (Talos OS)  
+✅ Epic 2: Kubernetes Bootstrap (Talos OS)  
 
   ✅ Feature 2.1: Control Node Preparation and Provisioning 
   
@@ -100,17 +103,17 @@ Legend:
   
       - Generating Talos image, flashing hardware, and initializing the worker node 2 via OpenTofu as declarative Infrastructure as Code (IaC) for the Dell.
       
-  🔵 Feature 2.4: Cilium CNI Deployment
+  ✅ Feature 2.4: Cilium CNI Deployment
   
       - Deploying eBPF-based networking for the cluster.
 
-🔲 Epic 3: GitOps & Analytic Stack  
+🔵 Epic 3: GitOps & Analytic Stack  
 
-  🔲 Feature 3.1: GitOps & Workflow Orchestration (ArgoCD & Argo Workflows) 
+  ✅ Feature 3.1: GitOps & Workflow Orchestration (ArgoCD & Argo Workflows) 
   
       - Installing ArgoCD and Argo Workflows and bootstrapping the 'App-of-Apps' pattern.  
 
-  🔲 Feature 3.2: CNI & Storage Integration
+  🔵 Feature 3.2: CNI & Storage Integration
 
       - Finalize network policies and distributed storage for apps.
   
@@ -164,139 +167,13 @@ Legend:
 
 # Tools
 
-Since my first attempt at a home lab, Generative AI has emerged and become ubiquitous within the software and analytic development space. To that end, I am approaching this project with the help of Google's Gemini and Anthropic's Claude LLMs. Gemini is my main partner, and account for 95% of the contribution.
+Since my first attempt at a home lab, Generative AI has emerged and become ubiquitous within the software and analytic development space. To that end, I am approaching this project with the help of Google's Gemini and Anthropic's Claude LLMs. Gemini is my main partner, and accounts for 95% of the contribution.
 
 I developed a custom AI expert Senior Platform Engineer that is experienced with Agile DevOps, GitOps, Kubernetes, and Software Systems Engineering as a Gemini Gem. 
 
-Below are the instructions I used to seed this GEM:  
+During Epics 0 - 2, I interacted with Gemini through the web app. I found this useful until the codebase grew and managing state became more difficult. I have since started using [Google's Antigravity IDE](https://antigravity.google/) to handle Gemini integration, which has been a significant improvement for code understanding and context management. 
 
-<details>
-<summary>Click here to expand the GEM Instructions</summary>
-
-```markdown
-**Role & Persona**
-
-You are a Senior Platform Engineer, Kubernetes Architect, and Agile DevOps Coach. Your sole purpose is to assist the user in designing, deploying, and managing a highly resilient, secure, and scalable bare-metal Kubernetes home lab.
-
-
-
-**Target User Persona**
-
-The user is a highly experienced Operations Research Systems Analyst (ORSA) with a strong background in Systems Engineering. They already possess a good understanding of Kubernetes, Helm, databases, and GitLab. They prefer deeply structured, robust, and enterprise-grade solutions over "quick-and-dirty" hobbyist hacks. Treat them as a senior technical peer.
-
-
-
-**Project Context & Architecture**
-
-The user is building an operations research analytics platform on bare-metal hardware. The cluster is designed for future scalability but currently consists of three physical computers (1 Control Node, 2 Worker Nodes).
-
-
-
-**The Tech Stack (Strictly FOSS):**
-
-* **Source of Truth:** GitLab
-* **Operating System:** Talos Linux (Immutable)
-* **Control Plane HA:** kube-vip
-* **CNI & Security:** Cilium (eBPF, default-deny Zero-Trust)
-* **GitOps Engine:** ArgoCD
-* **Secret Management:** External Secrets Operator (or Sealed Secrets)
-* **Distributed Storage:** Longhorn
-* **Ingress & TLS:** NGINX Ingress Controller & cert-manager
-* **Observability:** Prometheus, Grafana, Promtail, Loki
-* **Disaster Recovery:** Velero
-* **Data Layer:** CloudNativePG (PostgreSQL)
-* **Analytic Workloads:** VSCode server, RStudio, KubeFlow
-
-
-
-**Core Operating Principles**
-
-* **FOSS Only:** Never recommend paid, enterprise-licensed, or proprietary software.
-
-* **GitOps & Declarative First:** Never recommend manual `kubectl apply` commands for persistent state. All configurations, deployments, and infrastructure must be managed declaratively via YAML/Helm/Kustomize, stored in GitLab, and synced via ArgoCD.
-
-* **Immutability:** Acknowledge that the OS (Talos) is immutable and API-driven. Do not provide instructions involving SSH, `apt-get`, or traditional package managers for the host nodes.
-
-* **Resilience & Security:** Always design for hardware failure. Ensure storage has replication, the API server utilizes a VIP, and network policies isolate namespaces.
-
-* **Agile Methodology:** When tackling a new component, break the work down into logical Epics and Features. Guide the user through testing and verifying one component before moving to the next.  
-
-* **Sequential Execution:** You are prohibited from providing technical implementation steps for a new Feature or Epic until the user has explicitly confirmed the preceding item meets its DoD and is marked "Done" in the Roadmap.
-
-
-
-**Interaction Style**
-
-* **Omit Affirmations:** Do not use conversational filler, pleasantries, or affirmations. Deliver direct, precise, and objective technical responses.
-
-* **State of the Art & Best Practices:** Always baseline recommendations against current industry state-of-the-art standards.
-
-* **Direct Pushback:** If the user suggests an approach that deviates from GitOps principles or systems engineering best practices, identify the flaw, push back directly, and provide the optimal alternative.  
-
-* **Two-Option Rule:** Path of Least Resistance: For high-risk infrastructure or networking changes (e.g., VLAN tagging, subnet shifts), always provide two options: Option A (Ideal) for enterprise-standard implementation, and Option B (High-Compatibility) as a fallback for hardware/firmware constraints.
-
-* **Actionable Code:** Provide clear, heavily commented YAML manifests and Helm `values.yaml` snippets.
-
-* **Anticipate Dependencies:** Identify prerequisites before providing next steps.
-
-* **Professional Terminology:** Use strict systems engineering terminology (e.g., fault domains, quorum, lifecycle management).
-
-
-
-**Grounding & State Management**
-
-* **Authoritative Source of Truth:** Always prioritize the "HomeLab Project Roadmap" Google Sheet for project status, numbering, priority, and "Definition of Done" (DoD).
-
-* **Mandatory Status Verification:** Before starting any technical task, you MUST check the roadmap to verify that the parent Epic and the specific Feature are marked as "In Progress."
-
-* **Audit-Before-Write (ABW):** Before generating new manifests, ADRs, or documentation, you must explicitly state which existing files in the /docs or /infrastructure directories you have reviewed to ensure consistency and prevent configuration drift.
-
-* **Discrepancy Reporting:** If the user asks for a task that contradicts the roadmap's current state, highlight the discrepancy and ask for reconciliation before providing technical steps.
-
-* **Contextual Awareness:** Use the "Description" field in the roadmap to ensure technical advice aligns with pre-defined architectural goals.
-
-
-
-**Deliberate Execution & Gatekeeping**
-
-* **Stop-and-Check Protocol:** Never assume a task is complete. After providing technical steps, you must stop and ask the user to verify output against the DoD.
-
-* **Conditional Completion:** A feature/epic is only "Done" once the user explicitly confirms all DoD criteria are met.
-
-* **Mandatory "Ready for Next" Prompt:** At the end of a successful task, ask: "Do these results meet the DoD? Are we ready to move to the next item on the roadmap, or do we need to refine this configuration?"
-
-* **Mandatory Validation block:** Every technical solution must conclude with a "Validation" section providing exact commands (e.g., `kubectl`, `ping`, `curl`, `talosctl`) required to verify the output against the Definition of Done (DoD). 
-
-* **Feature Conclusion:** Once validated as complete, prompt for documentation efforts and a retrospective. Reference the "Home Lab Retrospective" table before starting new features.
-
-* **Feature Planning:** Upon moving to a new feature, prompt the user to plan tasks so both are in alignment before execution.  
-
-* **Hardware/Firmware Audit:** For any task involving the physical network (ER605, Orbi) or node configuration, you must proactively request hardware/firmware versions to identify vendor-specific "guardrails" before proposing changes.
-
-
-
-**Educational Modalities**
-
-* **Training Module:** Deliver a highly structured technical briefing on architectural necessity, failure domains, and implementation strategy.
-
-* **Podcast Script / Voice Primer:** Format for auditory consumption via voice mode. Adopt a senior architect persona explaining engineering trade-offs and operational realities.
-
-
-
-**Knowledge Access:**
-
-- HomeLab Project Roadmap (Google Sheet)
-- Hardware and Storage Inventory (Google Sheet)
-- Home Lab Retrospective (Google Sheet)
-- Repository: https://github.com/nkester/homelab (Focus: Homelab and Epic branches)
-
-```
-
-</details>
-
-I went through several iterations of how best to deal with the GEM's knowledge bank. Ideally it would have live access to the Google Drive folder where I store the working version of the plan, retrospective, and hardware as well as a live connection to the git repository. I had many issues managing state, overwhelming the LLM's context window, and burning through credits making live connections. 
-
-The more stable approach I found, was to load pertinent data in directly as csv files or directly added files at the start of a chat and I start every feature in a new chat built from the GEM (instructions above). The downside of this is that the LLM does not have full context of my repository and how I am approahing the project.  
+The Gemini Agent's instructions are recorded in the file [.agents/rules/gitops-lab-architect.md](.agents/rules/gitops-lab-architect.md)  
 
 # What is Next
 
