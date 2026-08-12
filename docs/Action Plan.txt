@@ -100,12 +100,16 @@ Phase 2: Argo Workflows Installation & DAG Verification (DoD 2 & 3)
 
 
 Phase 3: GitLab CI Integration & AWS Step Functions Parity (DoD 4)
-1. Webhook / API Trigger Setup: Configure ServiceAccount / API tokens or webhook triggers enabling external pipeline orchestration.
-2. GitLab CI Pipeline Mirroring:
-3. Create a test .gitlab-ci.yml pipeline configuration that triggers an Argo Workflows execution upon pipeline events.
-4. Validate end-to-end execution flow mimicking cloud-native state machine workflows (DoD 4).
+1. Webhook / API Trigger Setup: Configure ServiceAccount / API tokens enabling external pipeline orchestration.
+2. In-Cluster GitLab Runner Agent Deployment (ADR-0005): Deploy gitlab-runner in namespace gitlab-runner under ArgoCD management for enclave L2/L3 REST API submittal.
+3. GitLab CI Pipeline Mirroring: Update .gitlab-ci.yml with tags: [homelab-runner] to trigger Argo Workflows REST API submit endpoint upon pipeline events.
+4. Validate end-to-end execution flow mimicking cloud-native state machine workflows (DoD 4) [VERIFIED].
 
 
 Phase 4: Validation & Agile DoD Audit (DoD 1–5)
-1. Empirical Validation Commands: Execute exact CLI checks to confirm all 5 success criteria.
-2. Documentation & Action Plan Update: Update ./docs/Action Plan.txt and project logs before closing out the feature.
+1. Empirical Validation Commands: Execute exact CLI checks to confirm all 5 success criteria [PASSED].
+2. Documentation & Action Plan Update: Created ADR-0005, 03-gitops-and-orchestration.md, epic-3.md, and updated project logs.
+Feature 3.2: CNI & Storage Integration (Longhorn & Network Policies)
+Phase 1: Architecture & Storage Readiness Audit (DoD 1 & 2)
+1. Pre-flight verification of Talos OS storage kernel extensions (iscsi-tools, util-linux-tools).
+2. Author declarative Longhorn storage manifests under GitOps management via ArgoCD (argocd/apps/longhorn.yaml).
