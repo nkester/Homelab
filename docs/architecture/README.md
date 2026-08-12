@@ -55,11 +55,10 @@ graph TD
 
 ## 3. Blueprint Index
 
-Each component in the cluster must have a corresponding blueprint following the standard `./00-template.md`.
-
 | Component | Layer | Status | Document |
 | :--- | :--- | :--- | :--- |
-| Physical Networking | Layer I | Planned | [01-physical-network.md](./01-physical-network.md) |
-| Talos Provisioning | Layer II | Planned | [02-talos-os.md](./02-talos-os.md) |
-| Cilium CNI | Layer II | Planned | [03-cilium-security.md](./03-cilium-security.md) |
-| Longhorn Storage | Layer III | Planned | [04-longhorn-storage.md](./04-longhorn-storage.md) |  
+| Physical Networking | Layer I | Complete | [01-physical-network.md](./01-physical-network.md) |
+| Talos Provisioning | Layer II | Complete | [02-talos-os.md](./02-talos-os.md) |
+| Cilium CNI | Layer II | Complete | [03-cilium-security.md](./03-cilium-security.md) |
+| GitOps & Orchestration | Layer III/IV | Complete | [04-gitops-and-orchestration.md](./04-gitops-and-orchestration.md) |
+| Longhorn Storage | Layer III | Planned | [05-longhorn-storage.md](./05-longhorn-storage.md) |
