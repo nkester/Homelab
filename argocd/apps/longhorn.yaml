@@ -11,11 +11,24 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/nkester/homelab.git'
-    targetRevision: argocd-deploy
-    path: infrastructure/storage/longhorn
-    kustomize:
-      buildOptions: "--enable-helm"
+    repoURL: 'https://charts.longhorn.io'
+    chart: longhorn
+    targetRevision: 1.6.2
+    helm:
+      releaseName: longhorn
+      values: |
+        persistence:
+          defaultClass: true
+          defaultClassReplicaCount: 2
+          reclaimPolicy: Delete
+          allowVolumeExpansion: true
+        defaultSettings:
+          defaultDataPath: "/var/lib/longhorn"
+          defaultReplicaCount: 2
+          storageMinimalAvailablePercentage: 10
+          replicaAutoBalance: "least-effort"
+        csi:
+          kubeletRootDir: "/var/lib/kubelet"
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: longhorn-system
@@ -25,6 +38,11 @@ spec:
       jsonPointers:
         - /status/numberReady
   syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.kubernetes.io/audit: privileged
+        pod-security.kubernetes.io/warn: privileged
     automated:
       prune: true
       selfHeal: true
