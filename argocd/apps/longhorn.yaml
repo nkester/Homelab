@@ -35,6 +35,10 @@ spec:
     server: 'https://kubernetes.default.svc'
     namespace: longhorn-system
   ignoreDifferences:
+    - group: cilium.io
+      kind: CiliumIdentity
+      jsonPointers:
+        - /
     - group: apps
       kind: DaemonSet
       jsonPointers:
