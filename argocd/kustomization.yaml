@@ -5,5 +5,4 @@ namespace: argocd
 
 resources:
   - https://raw.githubusercontent.com/argoproj/argo-cd/v2.11.3/manifests/install.yaml
-  - argocd-cm.yaml
   - root-app.yaml
