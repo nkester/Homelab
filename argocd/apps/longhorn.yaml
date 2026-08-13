@@ -17,7 +17,7 @@ spec:
     helm:
       releaseName: longhorn
       values: |
-        preUpgradeJob:
+        helmPreUpgradeCheckerJob:
           enabled: false
         persistence:
           defaultClass: true
