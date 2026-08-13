@@ -17,6 +17,8 @@ spec:
     helm:
       releaseName: longhorn
       values: |
+        preUpgradeJob:
+          enabled: false
         persistence:
           defaultClass: true
           defaultClassReplicaCount: 2
