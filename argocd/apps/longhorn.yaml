@@ -17,8 +17,6 @@ spec:
     helm:
       releaseName: longhorn
       values: |
-        helmPreUpgradeCheckerJob:
-          enabled: false
         persistence:
           defaultClass: true
           defaultClassReplicaCount: 2
@@ -51,3 +49,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - SkipHooks=true
