@@ -1,0 +1,40 @@
+# Longhorn Helm Chart Values Overlay for Talos Linux Bare-Metal Cluster
+# Cluster Nodes: 10.10.10.51 (Control), 10.10.10.52 (Worker 1), 10.10.10.53 (Worker 2)
+
+global:
+  nodeSelector: {}
+
+persistence:
+  # Enable Longhorn as default K8s StorageClass (DoD Criterion 2)
+  defaultClass: true
+  # Configure volume replica count across 2 worker nodes
+  defaultClassReplicaCount: 2
+  reclaimPolicy: Delete
+  allowVolumeExpansion: true
+
+defaultSettings:
+  # Base directory for Longhorn data on host nodes
+  defaultDataPath: "/var/lib/longhorn"
+  # Default replica count for newly created volumes
+  defaultReplicaCount: 2
+  # Storage availability threshold (percentage)
+  storageMinimalAvailablePercentage: 10
+  # Replica auto-balancing strategy across nodes
+  replicaAutoBalance: "least-effort"
+  # Soft anti-affinity allows multiple replicas on single node if insufficient nodes exist
+  replicaSoftAntiAffinity: false
+
+csi:
+  # Kubelet root directory path on Talos Linux
+  kubeletRootDir: "/var/lib/kubelet"
+
+ingress:
+  enabled: false
+
+# Enable system managed components for CSI driver
+longhornUI:
+  replicas: 1
+
+metrics:
+  prometheus:
+    enabled: true
