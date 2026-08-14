@@ -113,11 +113,11 @@ Legend:
   
       - Installing ArgoCD and Argo Workflows and bootstrapping the 'App-of-Apps' pattern.  
 
-  🔵 Feature 3.2: CNI & Storage Integration
+  ✅ Feature 3.2: CNI & Storage Integration
 
       - Finalize network policies and distributed storage for apps.
   
-  🔲 Feature 3.3: External Secret Management (ESO)  
+  🔵 Feature 3.3: External Secret Management (ESO)  
   
       - Integrating External Secrets Operator to securely pull credentials from GitLab.  
 
@@ -174,6 +174,8 @@ I developed a custom AI expert Senior Platform Engineer that is experienced with
 During Epics 0 - 2, I interacted with Gemini through the web app. I found this useful until the codebase grew and managing state became more difficult. I have since started using [Google's Antigravity IDE](https://antigravity.google/) to handle Gemini integration, which has been a significant improvement for code understanding and context management. 
 
 The Gemini Agent's instructions are recorded in the file [.agents/rules/gitops-lab-architect.md](.agents/rules/gitops-lab-architect.md)  
+
+I've also developed specific prompts to assist with Agile Project Management processes like feature planning and retrospectives. These are located in the [.agents/workflows](/.agents/workflows) directory. 
 
 # What is Next
 
