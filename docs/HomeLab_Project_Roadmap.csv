@@ -62,9 +62,9 @@ Feature,3.1,GitOps & Workflow Orchestration (ArgoCD & Argo Workflows).,Installin
 5. App-of-apps pattern syncs without errors"
 Feature,3.2,CNI & Storage Integration,Finalizing network policies and distributed storage for apps.,Done,"1. Longhorn nodes report healthy
  2. StorageClass 'longhorn' set as default"
-Feature,3.3,External Secrets Operator,Automated secret injection from external providers into K8s secrets.,In Progress,"1. SecretStore connected to GitLab/Vault
+Feature,3.3,External Secrets Operator,Automated secret injection from external providers into K8s secrets.,Done,"1. SecretStore connected to GitLab/Vault
  2. Test secret successfully synced to K8s namespace"
-Feature,3.4,Object Storage Foundation (MiniO),Provide S3 API functionality required for enterprise data pipelines and backups (Velero).,To Do,"1. MiniO Operator deployed via ArgoCD.
+Feature,3.4,Object Storage Foundation (MiniO),Provide S3 API functionality required for enterprise data pipelines and backups (Velero).,In Progress,"1. MiniO Operator deployed via ArgoCD.
 2. S3-compatible API reachable via internal NGINX Ingress.
 3. Test bucket provisioned declaratively via YAML/SecretStore."
 Feature,3.5,Serverless Execution (Knative),"Introduce Knative Serving to implement scale-to-zero FaaS capability, mirroring AWS Lambda.",To Do,"1. Knative Serving layer active on cluster.
