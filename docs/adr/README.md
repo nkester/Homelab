@@ -16,3 +16,4 @@ Scope: Historical records of pivot points.
 | [ADR-0004](./0004-cni-and-datapath.md) | Cilium eBPF CNI & Native Routing | Accepted | 2026-07-30 |
 | [ADR-0005](./0005-in-cluster-gitlab-runner.md) | In-Cluster GitLab Runner for Private Enclave Orchestration | Accepted | 2026-08-11 |
 | [ADR-0006](./0006-exclude-cilium-identities-from-argocd-pruning.md) | Exclude Cilium eBPF Identities from ArgoCD Resource Pruning | Accepted | 2026-08-13 |
+| [ADR-0007](./0007-external-secrets-provider.md) | External Secrets Provider (GitLab CI/CD Variables) | Accepted | 2026-08-17 |
