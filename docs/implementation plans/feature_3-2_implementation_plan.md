@@ -159,3 +159,74 @@ The following existing repository files were audited prior to updating this plan
   # Check git status for clean state
   git status
   ```
+
+## Conclusion / Summary (Gemini Final Walkthrough artifact)
+
+We have completed the declarative configuration, subsystem documentation, GitOps app registration, and system architecture blueprint for **Longhorn Distributed Storage** on our 3-node bare-metal Talos Linux cluster.
+
+### Summary of Completed Changes
+
+#### Storage Subsystem Manifests (`/infrastructure/storage/longhorn`)
+- [`namespace.yaml`](/infrastructure/storage/longhorn/namespace.yaml): Provisioned `longhorn-system` namespace with `pod-security.kubernetes.io/enforce: privileged` PSA labels.
+- [`values.yaml`](/infrastructure/storage/longhorn/values.yaml): Configured Longhorn Helm overlay with `defaultClass: true`, `defaultClassReplicaCount: 2`, `defaultDataPath: "/var/lib/longhorn"`, and `kubeletRootDir: "/var/lib/kubelet"`.
+- [`kustomization.yaml`](/infrastructure/storage/longhorn/kustomization.yaml): Created Kustomize manifest bundle with `helmCharts` generator targeting Longhorn v1.6.2.
+- [`README.md`](/infrastructure/storage/README.md): Updated storage subsystem README with architectural design, directory layout, and blueprint references.
+
+#### GitOps Application Registry (`/argocd/apps`)
+- [`longhorn.yaml`](/argocd/apps/longhorn.yaml): Created ArgoCD `Application` manifest for Longhorn assigned to Sync Wave `1` under the App-of-Apps controller.
+- [`README.md`](/argocd/apps/README.md): Updated application registry documentation to list `longhorn.yaml`.
+
+#### Platform Architecture & System Documentation (`/docs/architecture`)
+- [`05-distributed-storage.md`](/docs/architecture/05-distributed-storage.md): Authored complete Layer III storage architecture blueprint, including Mermaid topology diagram, iSCSI host integration specs, failure domain analysis, and dynamic provisioning runbooks.
+- [`README.md`](/docs/architecture/README.md): Updated architecture index to register `05-distributed-storage.md` as Complete.
+
+---
+
+### Validation Protocols
+
+Run the following deterministic commands against your cluster to verify the deployment against the **Definition of Done (DoD)**:
+
+#### 1. Prerequisite Verification
+```bash
+# Verify Talos OS extensions across nodes
+talosctl get extensions --nodes 10.10.10.51,10.10.10.52,10.10.10.53
+```
+
+#### 2. GitOps Reconciliation Check
+```bash
+# Verify ArgoCD Application status
+kubectl get application -n argocd longhorn
+
+# Verify Longhorn control plane and daemonsets in longhorn-system
+kubectl get pods -n longhorn-system -o wide
+```
+
+#### 3. Definition of Done (DoD) Criteria Verification
+
+```bash
+# DoD Criterion 1: Longhorn nodes report healthy
+kubectl get nodes.longhorn.io -n longhorn-system
+
+# DoD Criterion 2: StorageClass 'longhorn' set as default
+kubectl get storageclass
+```
+
+#### 4. Dynamic Provisioning Test
+```bash
+kubectl create ns storage-test
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: longhorn-pvc-test
+  namespace: storage-test
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+EOF
+kubectl get pvc -n storage-test longhorn-pvc-test
+kubectl delete ns storage-test
+```
