@@ -2,6 +2,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: minio-operator
+  labels:
+    app.kubernetes.io/part-of: homelab
+    platform.homelab/layer: storage
+    platform.homelab/category: operator
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
