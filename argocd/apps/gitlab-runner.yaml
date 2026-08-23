@@ -2,6 +2,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: gitlab-runner
+  labels:
+    app.kubernetes.io/part-of: homelab
+    platform.homelab/layer: ci-cd
+    platform.homelab/category: agent
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"

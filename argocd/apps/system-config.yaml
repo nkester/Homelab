@@ -2,6 +2,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: system-config
+  labels:
+    app.kubernetes.io/part-of: homelab
+    platform.homelab/layer: bootstrap
+    platform.homelab/category: config
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
