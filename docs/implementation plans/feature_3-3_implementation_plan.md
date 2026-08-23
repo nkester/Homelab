@@ -49,3 +49,37 @@ None required for this phase.
 1. **ESO Deployment:** `kubectl get pods -n external-secrets` (Verify all controller pods are `Running`).
 2. **Provider Authentication:** `kubectl get clustersecretstore -o wide` (Verify the `STATUS` reports `Valid` and `Ready`).
 3. **End-to-End Sync Verification:** `kubectl get secret test-secret-sync -n default` and `kubectl describe externalsecret test-secret` (Confirm the payload successfully migrated from GitLab into the local `etcd` cache).
+
+## Tasks (Gemini Task List)
+
+- `[x]` Generate Documentation
+  - `[x]` Create `docs/adr/0007-external-secrets-provider.md`
+  - `[x]` Create `docs/architecture/06-external-secrets-integration.md`
+- `[x]` Generate ArgoCD Manifests
+  - `[x]` Create `argocd/apps/external-secrets-operator.yaml`
+- `[x]` Generate Infrastructure Manifests
+  - `[x]` Create `infrastructure/bootstrap/secret-store.yaml`
+  - `[x]` Create `infrastructure/bootstrap/test-external-secret.yaml`
+- `[x]` Manual Validation
+  - `[x]` Prompt user for manual token injection (`kubectl create secret ...`)
+  - `[x]` Apply `argocd/apps/external-secrets-operator.yaml` and verify deployment
+  - `[x]` Apply bootstrap manifests and verify SecretStore/ExternalSecret sync
+
+
+## Conclusion / Summary (Gemini Final Walkthrough artifact)
+
+We have successfully completed the implementation and validation of the External Secrets Operator (ESO) integration with GitLab. 
+
+### Architectural Achievements
+1. **Zero-Token-In-Git Enforced**: We successfully established a workflow that injects the GitLab API token out-of-band directly into `etcd`, ensuring no sensitive credentials touch the Git repository.
+2. **GitOps Strict Adherence**: We rectified the initial manual deployment anti-pattern by creating a dedicated ArgoCD Application (`external-secrets-config`) to track and sync the infrastructure configurations continuously.
+3. **Fail-Closed Security**: By testing the limitations of GitLab's new fine-grained tokens, we discovered that they currently lack the requisite API access for project metadata, forcing us back to a properly scoped Project Access Token (`read_api`, Maintainer).
+
+### Verified Infrastructure
+The final validation checks prove that the integration is fully operational:
+
+- The `ClusterSecretStore` (`gitlab-secret-store`) successfully authenticated against the GitLab REST API and is in a `Valid` state.
+- The `ExternalSecret` (`test-secret`) successfully retrieved the dummy CI/CD variable (`TEST_SECRET_VARIABLE`) and seamlessly hydrated a native Kubernetes `Secret` (`test-secret-sync`) in the `default` namespace.
+
+> [!TIP]
+> Future workloads (like CloudNativePG or RStudio) can now securely reference credentials via standard `envFrom` or `volumes` blocks without ever knowing ESO exists!

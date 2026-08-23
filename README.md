@@ -117,11 +117,11 @@ Legend:
 
       - Finalize network policies and distributed storage for apps.
   
-  🔵 Feature 3.3: External Secret Management (ESO)  
+  ✅ Feature 3.3: External Secret Management (ESO)  
   
       - Integrating External Secrets Operator to securely pull credentials from GitLab.  
 
-  🔲 Feature 3.4: Object Storage Foundation (MiniO)  
+  🔵 Feature 3.4: Object Storage Foundation (MiniO)  
   
       - Provide S3 API functionality to support data pipelines and backups.  
 
