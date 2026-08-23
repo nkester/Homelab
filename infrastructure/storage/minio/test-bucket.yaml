@@ -10,7 +10,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: mc
-          image: minio/mc:RELEASE.2024-05-09T03-10-33Z
+          image: minio/mc:latest
           envFrom:
             - secretRef:
                 name: minio-creds

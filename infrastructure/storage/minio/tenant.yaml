@@ -9,7 +9,7 @@ spec:
   pools:
     - name: pool-0
       servers: 2
-      volumesPerServer: 1
+      volumesPerServer: 2
       volumeClaimTemplate:
         metadata:
           name: data
@@ -18,6 +18,6 @@ spec:
             - ReadWriteOnce
           resources:
             requests:
-              storage: 10Gi
+              storage: 50Gi
           storageClassName: longhorn
   requestAutoCert: false
