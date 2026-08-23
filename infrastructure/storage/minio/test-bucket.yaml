@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-test-bucket
+  namespace: minio-tenant
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mc
+          image: minio/mc:RELEASE.2024-05-09T03-10-33Z
+          envFrom:
+            - secretRef:
+                name: minio-creds
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until mc alias set local http://minio.minio-tenant.svc.cluster.local:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"; do
+                echo "Waiting for MinIO service to become ready..."
+                sleep 5
+              done
+              mc mb --ignore-existing local/test-bucket
+              mc mb --ignore-existing local/velero-backups
+              echo "Buckets test-bucket and velero-backups created successfully."
