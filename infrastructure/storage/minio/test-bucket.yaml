@@ -18,6 +18,7 @@ spec:
             - /bin/sh
             - -c
             - |
+              set -e
               until mc alias set local http://minio.minio-tenant.svc.cluster.local "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"; do
                 echo "Waiting for MinIO service to become ready..."
                 sleep 5
