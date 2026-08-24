@@ -121,11 +121,11 @@ Legend:
   
       - Integrating External Secrets Operator to securely pull credentials from GitLab.  
 
-  🔵 Feature 3.4: Object Storage Foundation (MiniO)  
+  ✅ Feature 3.4: Object Storage Foundation (MiniO)  
   
       - Provide S3 API functionality to support data pipelines and backups.  
 
-  🔲 Feature 3.5: Serverless Execution through Knative
+  🔵 Feature 3.5: Serverless Execution through Knative
 
       - Implement Knative Serving to mirror AWS Lambda capabilities.
 

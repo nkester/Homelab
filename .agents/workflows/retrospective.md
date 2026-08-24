@@ -12,17 +12,20 @@ Verify with the user that all configurations have been committed to the GitLab r
 
 Contextual Agile Analysis:
 
-Analyze the execution transcript for the completed feature. Identify architectural bottlenecks, troubleshooting loops, effective debugging strategies, and deviations from the original action plan.
+Analyze the execution transcript for the completed feature. Focus exclusively on:
+1. Team dynamics: How we communicated, collaborated, and passed state/context between user and agent.
+2. Workflow friction: Process gaps, misaligned assumptions, or inefficiencies in how we executed tasks.
+3. Future implications: Technical debt incurred, tasks blocked, or how decisions made today will impact tomorrow's roadmap items. Do NOT include purely historical architectural decisions unless they directly impact future work.
 
 Retrospective Generation:
 
-Generate a minimum of three (3) "Sustains" (successful practices, efficient workflows, or robust architectural decisions to maintain).
+Generate a minimum of three (3) "Sustains" (successful collaboration practices, efficient communication loops, or process wins to maintain).
 
-Generate a minimum of three (3) "Improves" (process frictions, technical debt incurred, or testing gaps to mitigate in future epics).
+Generate a minimum of three (3) "Improves" (team communication breakdowns, process frictions, technical debt to resolve, or future tasks blocked).
 
 Format the output strictly as a table ready for inclusion in docs/Retrospective.csv.
 
-Table Schema: Date | Feature/Epic | Type (Sustain/Improve) | Observation | Rationale/Impact | Action Item
+Table Schema: Feature/Epic Number | Feature Name | Type (Sustain/Improve) | Title | Discussion | Action Item
 
 Iteration & Consensus (Wait State):
 
