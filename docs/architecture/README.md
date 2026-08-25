@@ -63,4 +63,5 @@ graph TD
 | GitOps & Orchestration | Layer III/IV | Complete | [04-gitops-and-orchestration.md](./04-gitops-and-orchestration.md) |
 | Longhorn Storage | Layer III | Complete | [05-distributed-storage.md](./05-distributed-storage.md) |
 | External Secrets | Layer III | Complete | [06-external-secrets-integration.md](./06-external-secrets-integration.md) |
-| Object Storage (MinIO) | Layer III | In Progress | [07-object-storage-foundation.md](./07-object-storage-foundation.md) |
+| Object Storage (MinIO) | Layer III | Complete | [07-object-storage-foundation.md](./07-object-storage-foundation.md) |
+| Serverless Execution (Knative) | Layer III | In Progress | [08-serverless-execution.md](./08-serverless-execution.md) |
