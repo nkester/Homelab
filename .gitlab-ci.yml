@@ -1,0 +1,47 @@
+# GitLab CI Integration with Argo Workflows (AWS Step Functions Parity)
+stages:
+  - test
+  - orchestrate
+
+variables:
+  ARGO_NAMESPACE: "argo-workflows"
+
+units-test:
+  stage: test
+  script:
+    - echo "Running unit tests prior to workflow trigger..."
+
+trigger-argo-dag-workflow:
+  stage: orchestrate
+  script:
+    - echo "Triggering Argo Workflow DAG execution (AWS Step Functions Parity)..."
+    - |
+      if [ -z "${ARGO_SERVER_URL}" ]; then
+        echo "ERROR: ARGO_SERVER_URL is not set in GitLab CI/CD Variables."
+        echo "Please configure ARGO_SERVER_URL (e.g., https://10.10.10.10:2746) under Settings -> CI/CD -> Variables."
+        exit 1
+      fi
+      if [ -z "${ARGO_WORKFLOW_TOKEN}" ]; then
+        echo "ERROR: ARGO_WORKFLOW_TOKEN is not set in GitLab CI/CD Variables."
+        echo "Please configure ARGO_WORKFLOW_TOKEN under Settings -> CI/CD -> Variables."
+        exit 1
+      fi
+    - |
+      curl -k -f -X POST "${ARGO_SERVER_URL}/api/v1/workflows/${ARGO_NAMESPACE}/submit" \
+        -H "Authorization: Bearer ${ARGO_WORKFLOW_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{
+              "resourceKind": "WorkflowTemplate",
+              "resourceName": "dag-workflow",
+              "submitOptions": {
+                "parameters": [
+                  "commit_sha='${CI_COMMIT_SHA}'",
+                  "branch='${CI_COMMIT_REF_NAME}'"
+                ]
+              }
+            }'
+  tags:
+    - homelab-runner
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "argocd-deploy"'
+

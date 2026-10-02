@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: dag-workflow
+  namespace: argo-workflows
+spec:
+  entrypoint: main-dag
+  arguments:
+    parameters:
+      - name: commit_sha
+        value: "unknown"
+      - name: branch
+        value: "main"
+  templates:
+  - name: main-dag
+    dag:
+      tasks:
+      - name: task-a
+        template: echo-step
+        arguments:
+          parameters: [{name: message, value: "Step A: Initializing pipeline for commit {{workflow.parameters.commit_sha}} on branch {{workflow.parameters.branch}}"}]
+      
+      - name: task-b
+        dependencies: [task-a]
+        template: echo-step
+        arguments:
+          parameters: [{name: message, value: "Step B: Parallel processing branch 1"}]
+
+      - name: task-c
+        dependencies: [task-a]
+        template: echo-step
+        arguments:
+          parameters: [{name: message, value: "Step C: Parallel processing branch 2"}]
+
+      - name: task-d
+        dependencies: [task-b, task-c]
+        template: echo-step
+        arguments:
+          parameters: [{name: message, value: "Step D: Aggregating DAG outputs successfully"}]
+
+  - name: echo-step
+    inputs:
+      parameters:
+      - name: message
+    container:
+      image: alpine:3.19
+      command: [sh, -c]
+      args: ["echo '{{inputs.parameters.message}}'"]
