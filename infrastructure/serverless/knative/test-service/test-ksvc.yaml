@@ -1,0 +1,18 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: helloworld-go
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        # Scale to zero grace period configured for validation
+        autoscaling.knative.dev/scale-to-zero-pod-retention-period: "15s"
+        autoscaling.knative.dev/window: "15s"
+    spec:
+      containers:
+        - image: gcr.io/knative-samples/helloworld-go
+          env:
+            - name: TARGET
+              value: "ORSA Homelab"
