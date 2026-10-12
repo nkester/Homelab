@@ -19,6 +19,6 @@ Key Architectural Decisions:
 
 ## 3. Consequences
 * **Positive:** Complete S3 API compatibility for cloud-native workloads; CRD readiness separation via Sync Waves; independent control plane (operator) and data plane (tenant) lifecycle; zero plain-text tokens in version control.
-* **Negative:** Overlapping storage management (MinIO pool + Longhorn CSI) introduces potential write amplification on mechanical HDDs if both layers perform volume replication.
-  * **Mitigation:** Longhorn volumes allocated to MinIO are configured with `numberOfReplicas: 1` (or local block storage), eliminating double-write penalties on mechanical HDDs and delegating multi-node fault tolerance to MinIO's application-level pool topology across worker nodes.
-* **Neutral:** Downstream workloads consume S3 endpoints via internal DNS rather than mounting local filesystems or PVCs.
+* **Negative / Operational Reality:** Dual-layer redundancy model. MinIO manages erasure coding across 4 PVC drives (write quorum 3 of 4), while Longhorn synchronously replicates each underlying block volume across both physical worker nodes (`numberOfReplicas: 2` via standard `longhorn` StorageClass). This ensures high resilience against raw disk/node failure at the block layer, but incurs 2x disk capacity consumption and synchronous replication traffic across the wireless bridge backhaul during volume re-syncs.
+* **Operational Insight:** Corrupted Longhorn volume states (e.g. replica mount timeouts) directly block MinIO pod scheduling. Recovery procedures require purging degraded block attachments to allow Longhorn and MinIO erasure coding to reconcile clean state.
+* **Neutral:** Downstream workloads consume S3 endpoints via internal DNS (`minio.minio-tenant.svc.cluster.local:9000`) rather than mounting local filesystems or PVCs.
