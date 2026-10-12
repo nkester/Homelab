@@ -25,6 +25,10 @@ spec:
       kind: Deployment
       jsonPointers:
         - /status/terminatingReplicas
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      jsonPointers:
+        - /rules
   syncPolicy:
     automated:
       prune: true
