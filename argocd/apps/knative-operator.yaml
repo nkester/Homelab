@@ -13,9 +13,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/knative/operator.git'
-    targetRevision: knative-v1.14.0
-    path: config/
+    repoURL: 'https://github.com/nkester/homelab.git'
+    targetRevision: argocd-deploy
+    path: infrastructure/serverless/knative/operator
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: knative-operator
