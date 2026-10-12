@@ -8,6 +8,7 @@ metadata:
     platform.homelab/layer: serverless
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -19,6 +20,11 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: knative-operator
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
   syncPolicy:
     automated:
       prune: true
