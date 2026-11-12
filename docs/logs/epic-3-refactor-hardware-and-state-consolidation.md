@@ -35,8 +35,31 @@ Five candidate machines were inspected and benchmarked. Rather than running low-
 
 ---
 
+## Phase 2: Network DHCP Reservations, GitLab OpenTofu State Backend & Modular IaC Setup (Completed)
+
+### 1. Router DHCP Address Reservations & Pool Segmentation (`TP-Link Omada ER605`)
+* Updated VLAN 10 (`10.10.10.0/24`) DHCP Address Reservations on the `ER605` gateway (`10.10.10.1`):
+  * `10.10.10.51` → `A0-48-1C-98-4E-E3` (`controlplane-1` — `HP Compaq Pro 6300 SFF`)
+  * `10.10.10.52` → `28-3A-4D-07-EE-65` (`worker-1` — `HP Pavilion 590-p0xxx`)
+  * `10.10.10.53` → `6C-4B-90-45-42-16` (`worker-2` — `Lenovo ideacenter 310S-08IAP`)
+* Restricted the dynamic VLAN 10 DHCP allocation pool to `10.10.10.30 – 10.10.10.99`, guaranteeing zero overlap with the Talos Layer 2 Control Plane VIP (`10.10.10.10`), switch management (`10.10.10.5`), and Cilium LoadBalancer IPAM pool (`10.10.10.17 – 10.10.10.25`).
+
+### 2. GitLab-Managed HTTP OpenTofu State Backend (`homelab-bootstrap`)
+* Created a GitLab Fine-Grained Personal Access Token scoped to `Terraform state` (`Read and write` + lock/unlock) on `nkester-personal-cloud/homelab`.
+* Implemented `infrastructure/bootstrap/init-state.sh` (`set -euo pipefail`) and `infrastructure/bootstrap/.env.example`, keeping `.env` strictly git-ignored (`.gitignore`) to enforce the Zero-Token-in-Git security posture.
+* Initialized OpenTofu against `https://gitlab.com/api/v4/projects/${GITLAB_PROJECT_ID}/terraform/state/homelab-bootstrap` with distributed HTTP state locking (`POST /lock`, `DELETE /lock`).
+
+### 3. Modular OpenTofu Configuration (`main.tf`, `variables.tf`, `terraform.tfvars`)
+* Parameterized `control_plane` and `worker_nodes` (`for_each = var.worker_nodes`) so each node can be staged and provisioned individually at the primary workstation (`worker_nodes = {}` initially, followed by `worker-1` and `worker-2`).
+* Configured `allowSchedulingOnControlPlanes = true` and multi-document Talos `v1alpha1` `UserVolumeConfig` (`longhorn-extra` at `/var/mnt/longhorn-extra`) for secondary SATA HDDs.
+* Implemented a two-stage Talos health gate surrounding `helm_release.cilium`:
+  * **Stage 1 (`pre_cni`, `skip_kubernetes_checks = true`):** Verifies low-level Talos OS daemons (`etcd`, `kubelet`, `machined`) and the API server (`:6443`) are online before Helm installs Cilium.
+  * **Stage 2 (`post_cni`, `skip_kubernetes_checks = false`):** Verifies full Kubernetes and CNI readiness (`Node Ready` and `kube-system` pod readiness) after Cilium is installed.
+* Validated configuration via `./init-state.sh`, `tofu fmt -check -recursive`, and `tofu validate` (`Success! The configuration is valid.`).
+
+---
+
 ## Next Phases (Pending Execution)
-* **Phase 2:** Update `ER605` VLAN 10 DHCP MAC-to-IP reservations (`.51`, `.52`, `.53`), initialize GitLab HTTP Terraform state (`homelab-bootstrap`), and refactor OpenTofu (`infrastructure/bootstrap/main.tf`) for iterative node provisioning.
 * **Phase 3:** Iteratively stage each node at the primary workstation (`controlplane-1` → `worker-1` → `worker-2`), apply its OpenTofu configuration, relocate to the `TL-SG108E` switch (`Port 1`, `Port 2`, `Port 3`), and validate cluster quorum.
 * **Phase 4:** Declaratively bootstrap ArgoCD and reconcile Sync Waves `-1` through `2` (`system-config`, `cilium-lb-ipam`, `external-secrets`, `argo-workflows`, `gitlab-runner`, `longhorn`, `ingress-nginx`, `minio`, `knative`).
 * **Phase 5:** Finalize post-provisioning device paths, record `ADR-0010`, and resume Feature 3.5.
