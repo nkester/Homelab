@@ -1,115 +1,178 @@
-﻿Epic 0
-Feature 0.5
-Phase 1: Formalize Architectural Governance (/docs/adr/)
-We must capture the "Why" before the "What."
-1. Initialize ADR Directory: Create /docs/adr/README.md to explain the ADR process (based on the Mygrove/ADR standard).
-2. Draft ADR-0001 (Subnet Pivot): Document the technical justification for shifting the ER605 to the 192.168.1.x neighborhood.
-   * Context: Vendor firmware limitations on the CR1000A.
-   * Decision: Pivot the lab subnet to match the ISP gateway's hardcoded constraints.
-   * Consequences: Simplified routing, avoidance of double-NAT issues, and alignment with Talos's static IP requirements.
-Phase 2: Define System Modeling Standards (/docs/architecture/)
-We will establish a standardized blueprint template to ensure all future components (Cilium, Longhorn, etc.) are documented with technical parity.
-1. Create Architecture Template: Establish 00-template.md covering:
-   * Logical View: Component interactions.
-   * Physical View: Node placement and hardware constraints.
-   * Data Flow: Traffic ingress/egress patterns (eBPF/Cilium focus).
-   * Failure Domains: Impact of node or disk failure.
-Phase 3: Narrative Log Refactoring (/docs/logs/)
-Transform the roadmap's status updates into an engineering journal.
-1. Initialize Log Directory: Create /docs/logs/README.md.
-2. Refactor Epic 0 Log: Extract data from the "Project & Environment Stabilization" roadmap and the Retrospective CSV to create a chronological record of the hardware assembly and network troubleshooting phases.
-Phase 4: Construct the Functional System Manual (/docs/README.md)
-The "Glue" that provides the entry point for the entire platform documentation.
-1. Define Layered System State: Organize documentation links by abstraction layer:
-   * Layer 0 (Hardware/L1): Physical Inventory, Cabling.
-   * Layer 1 (Provisioning/OS): Talos configurations, MachineConfigs.
-   * Layer 2 (System Services): CNI, CSI, Ingress.
-   * Layer 3 (Workloads): ORSA Analytics, Databases.
-Phase 5: Verification and Alignment
-1. Link Integrity Check: Ensure all relative Markdown links between the root README, /docs/README.md, and the sub-directories are functional.
-2. DoD Audit: Verify against the roadmap success criteria.
+# Feature Action Plan: Plane 1 State & Hardware Consolidation Refactor (Feature 3.4-R)
 
+## Purpose
+Recover from lost Talos Linux machine secrets (`talosconfig` / PKI root of trust), transition OpenTofu state management to GitLab's built-in HTTP state backend, consolidate harvested RAM and SATA storage from two donor systems (`HP Pavilion 570-a1xx` and `Dell Inspiron 15R-5537`) into our three active desktop nodes (`HP Compaq Pro 6300 SFF`, `HP Pavilion 590-p0xxx`, and `Lenovo ideacenter 310S-08IAP`), re-align node roles (`controlplane-1`, `worker-1`, `worker-2`) to match hardware capabilities, and declaratively restore all cluster applications via OpenTofu and ArgoCD so the environment is ready to resume Feature 3.5.
 
-Epic 1
-Feature 1.1: Logical Network Segmentation (VLAN 10)
+## Definition of Done (DoD)
+* **DoD 1:** All cluster nodes are re-established through declarative OpenTofu statements backed by GitLab-managed Terraform state, with Talos API access verified across all nodes.
+* **DoD 2:** All applications previously deployed up to this point are re-deployed and healthy through ArgoCD and GitOps principles on the new cluster, and the cluster is prepared to begin Feature 3.5.
+* **DoD 3:** All documentation (`hardware_inventory.csv`, network IPAM tables, architecture blueprints, bootstrap SOPs, ADRs, engineering logs, and Roadmap) is updated to reflect the new static IP addresses, consolidated hardware specifications, and role changes.
 
+---
 
-Feature 1.2: Wireless Enclave Standoff
+## Hardware Inventory & Consolidated Role Assignments
+*(Completed in Phase 1)*
 
+### Table 1: Complete Hardware Specifications & Talos Extension Matrix
+| Hardware ID | System Model | CPU | RAM | Storage Drive(s) | NIC & Chipset | Wired MAC Address | Required Talos Modules (Extensions) | Target Status & Role |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **System 1 (Upgraded)** | HP Compaq Pro 6300 SFF (QV985AV) | Intel i7-3770 @ 3.4GHz (4C/8T) | **20GB DDR3** (`4 DIMMs: 2x 8GiB + 2x 2GiB`) | **Dual SATA Drives (~1.2TB total):**<br>• `/dev/sda`: 256GB SATA SSD (OS & `etcd`)<br>• `/dev/sdb`: 931.5GB 2.5" SATA HDD (`ST1000LM024`, harvested from Dell 15R, connected via ODD SATA/power in lower bay, PCB facing up) | Intel 82579LM GbE (`eno1`, chipset: `e1000e`) | `a0:48:1c:98:4e:e3` | `siderolabs/iscsi-tools`, `siderolabs/util-linux-tools` | **Active — `controlplane-1`** |
+| **System 2 (Upgraded)** | HP Pavilion Desktop 590-p0xxx | Intel i5-8400 @ 2.80GHz (6C/6T, 1 socket) | **12GB DDR4** (`8GB + 4GB` from HP 570; `11Gi` usable) | **Dual 1TB SATA HDDs (~2TB total):**<br>• `/dev/sda`: 931.5GB (`ST1000DM003-1SB1`, S/N: `ZN10H6ZF`)<br>• `/dev/sdb`: 931.5GB (`WDC WD10EZEX-60W`, S/N: `WD-WCC6Y1PYNSEJ` from HP 570) | Wired: RTL8111/8168/8211/8411 GbE (`enp2s0`, chipset: `r8169`); Wireless: RTL8821CE (`wlp1s0`, MAC: `f4:39:09:33:dc:f9`, chipset: `rtw88_8821ce`) | `28:3a:4d:07:ee:65` | `siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`, `siderolabs/realtek-firmware` | **Active — `worker-1`** |
+| **System 3 (Upgraded)** | Lenovo ideacenter 310S-08IAP | Intel Celeron J3355 (2C/2T, MTM: 90GA002US) | **8GB DDR3L-1600** (`Samsung 2Rx8 PC3L-12800S-11-12-F3` SODIMM from Dell 15R) | **465.8GB 7200 RPM SATA HDD** (`ST500DM002-1SB10`) | Realtek RTL8111/8168 GbE (`enp2s0`, chipset: `r8169`) | `6c:4b:90:45:42:16` | `siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`, `siderolabs/realtek-firmware` | **Active — `worker-2`** |
 
-Epic 2
-Feature 2.2: Worker Node 1 Preparation and Provisioning
-Phase 1: Hardware & Image Preparation (DoD 1 & 2)
-1. System Extension Audit: The Lenovo ideacenter relies on a Realtek RTL8111/8168 PCI Express Gigabit Ethernet Controller. This NIC is typically supported by the upstream Talos kernel, but we will utilize factory.talos.dev (or the Sidero SchedMD API) to generate a v1.13.7 ISO, injecting the siderolabs/realtek-r8152 extension if dmesg flags missing firmware during early boot.
-2. Network Isolation: Talos strictly expects reliable wired networking. The Intel Dual Band Wireless-AC 3165 adapter will be disabled in the Lenovo UEFI/BIOS to prevent talos-networkd from attempting to route metrics or pull images over an unstable wireless bridge.
-3. Boot to Maintenance Mode: Flash the generated .iso to media. Boot the Lenovo node and allow it to initialize into Maintenance Mode.
-Phase 2: OpenTofu Declarative IaC (DoD 3)
-1. Provider Initialization: Configure the siderolabs/talos OpenTofu provider in the repository's infrastructure directory.
-2. Machine Secrets & Config: Generate or extract the existing cluster machine secrets. Define a talos_machine_configuration_apply resource targeting IP 10.10.10.52.
-3. Storage Targeting: The Lenovo node possesses a 465.8G ST500DM002-1SB10 HDD (/dev/sda). The OpenTofu Talos machine configuration patch will explicitly target /dev/sda as the installation disk to ensure the OS installs to the persistent disk rather than ephemeral memory.
-4. Apply State: Execute tofu plan and tofu apply to push the declarative configuration. Talos will write to /dev/sda, reboot, and transition to a running state.
-Feature 2.3: Worker Node 2 Preparation and Provisioning
-Phase 1: Hardware & Image Preparation (DoD 1 & 2)
-1. System Extension Audit: The Realtek RTL810xE may require explicit kernel extensions (e.g., siderolabs/realtek-r8152) if the upstream Talos kernel lacks driver support during initial boot.
-2. Network Isolation: Talos requires reliable wired networking. The Intel Wireless 7260 must be disabled via the Dell UEFI/BIOS to prevent talos-networkd from attempting to route metrics across an unstable backhaul.
-3. Boot to Maintenance Mode: Generate and flash the v1.13.7 Talos ISO, boot the Dell hardware, and allow it to initialize into Maintenance Mode.
-Phase 2: OpenTofu Declarative IaC (DoD 3)
-1. Manifest Integration: Append data "talos_machine_configuration" "worker2" and resource "talos_machine_configuration_apply" "worker2" to the existing OpenTofu state.
-2. Configuration Patch: Target the 931.5G ST1000LM024 HDD at /dev/sda for the Talos installation to ensure it does not write to ephemeral loop devices. Assign the static IP 10.10.10.53 and map it to the logical interface enumerated for the Realtek NIC.
-3. Apply State: Execute tofu plan and tofu apply to push the declarative machine configuration and transition the node to a running state.
-Phase 3: Validation (DoD 3 & 4)
-1. Validate network routing via ICMP ping to 10.10.10.53.
-2. Validate cluster quorum via talosctl health --nodes 10.10.10.53 and talosctl get members.
+*(Note: **HP Pavilion Desktop 570-a1xx** and **Dell Inspiron 15R-5537 Laptop** were stripped of usable RAM and SATA drives to upgrade Systems 1, 2, and 3 and are permanently retired).*
 
+### Table 2: Node Role, Switch Port & Network IPAM Assignment (VLAN 10: `10.10.10.0/24`)
+| Logical Hostname | Cluster Role | Assigned Hardware | Wired MAC Address | TL-SG108E Switch Port | Static IP Address | VIP Binding | Pre-Enumerated NIC | Pre-Enumerated Disk(s) | Sidero Image Schematic Hash (`v1.13.7`) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `controlplane-1` | Control Plane | **System 1:** HP Compaq Pro 6300 SFF (20GB RAM) | `a0:48:1c:98:4e:e3` | Port 1 (VLAN 10) | `10.10.10.51/24` | `10.10.10.10` | `eno1` | `/dev/sda` (256GB SSD)<br>`/dev/sdb` (`ST1000LM024`, 931.5GB 2.5" HDD) | `613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245` |
+| `worker-1` | Worker Node 1 | **System 2:** HP Pavilion 590-p0xxx (12GB RAM) | `28:3a:4d:07:ee:65` | Port 2 (VLAN 10) | `10.10.10.52/24` | None | `enp2s0` | `/dev/sda` (`ST1000DM003`, 931.5GB)<br>`/dev/sdb` (`WD10EZEX`, 931.5GB) | `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09` |
+| `worker-2` | Worker Node 2 | **System 3:** Lenovo ideacenter 310S (8GB RAM) | `6c:4b:90:45:42:16` | Port 3 (VLAN 10) | `10.10.10.53/24` | None | `enp2s0` | `/dev/sda` or `/dev/sdb` (`ST500DM002`, 465.8GB) | `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09` |
 
-Feature 2.4: Cilium CNI Deployment
-Phase 1: Architecture & Helm Values Preparation
-1. Define Cilium HelmRelease/Manifest: Configure native-routing, eBPF acceleration, and kube-proxy replacement parameters tailored to Talos Linux.
-2. IPAM Configuration: Align pod CIDR allocations with the cluster network topology (`10.10.10.0/24`).
+---
 
+## Phased Execution Plan
 
-Phase 2: Deployment & GitOps Integration
-1. Apply Configuration: Push Cilium manifests into the cluster infrastructure layer.
-2. Verify Pod Health: Ensure DaemonSet pods initialize correctly across control plane and worker nodes without interface collision.
+### Phase 1: Hardware Audit, Component Consolidation, Role Selection & Baseline Documentation (COMPLETE)
+*Audit all candidate computers, consolidate RAM and storage drives into the three active desktop nodes, assign cluster roles, and update architecture and inventory documentation prior to network/cluster provisioning.*
 
+* **Step 1.1: Audit Hardware, Consolidate RAM/Storage & Configure BIOS/UEFI**
+  * Audited all 5 systems and harvested components from the two donor systems (`HP Pavilion 570-a1xx` and `Dell Inspiron 15R-5537`):
+    * Installed `4GB DDR4 UDIMM` and `1TB 3.5" WDC WD10EZEX-60W HDD` from the `HP 570-a1xx` into the `HP Pavilion 590-p0xxx` (`12GB DDR4` total, `~2TB` across two 3.5" SATA HDDs).
+    * Installed one `8GB Samsung PC3L-12800S DDR3L SODIMM` from the `Dell Inspiron 15R` into the `Lenovo ideacenter 310S-08IAP` (`8GB DDR3L` total, retaining its 7200 RPM `465.8GB ST500DM002` HDD).
+    * Installed the `931.5GB 2.5" ST1000LM024 HDD` from the `Dell Inspiron 15R` into the `HP Compaq Pro 6300 SFF` lower optical bay using the optical drive SATA data and power connectors (`20GB DDR3` across `2x 8GiB + 2x 2GiB` DIMMs, `256GB SSD` + `931.5GB 2.5" HDD`).
+  * Configured BIOS/UEFI settings (`Intel VT-x`, UEFI boot with Secure Boot/CSM disabled, AC Power Recovery).
+* **Step 1.2: Assign Node Roles & Retire Donor Chassis**
+  * **`controlplane-1` (`10.10.10.51` / VIP `10.10.10.10`):** Assigned to **`HP Compaq Pro 6300 SFF`** (`i7-3770` 4C/8T, 20GB DDR3, 256GB SATA SSD + 931.5GB 2.5" HDD, Intel `e1000e` `eno1`). Retains `etcd` and `kube-apiserver` on the 256GB SSD for low `wal_fsync` latency while adding a 931.5GB secondary disk and 20GB RAM.
+  * **`worker-1` (`10.10.10.52`):** Assigned to **`HP Pavilion Desktop 590-p0xxx`** (`i5-8400` 6C/6T, 12GB DDR4, Dual 931.5GB SATA HDDs, Realtek GbE `enp2s0`). Replaces the Lenovo at `.52` as the primary 6-core compute and 2TB storage worker.
+  * **`worker-2` (`10.10.10.53`):** Assigned to **`Lenovo ideacenter 310S-08IAP`** (`Celeron J3355` 2C/2T, upgraded to 8GB DDR3L RAM, 465.8GB 7200 RPM HDD, Realtek GbE `enp2s0`). Re-assigned from `.52` to `.53` to replace the retired Dell laptop, with 2x its previous memory (`8GB` vs `4GB`).
+  * **Retired Hardware:** Permanently retired the stripped **`HP Pavilion Desktop 570-a1xx`** and **`Dell Inspiron 15R-5537` laptop**.
+* **Step 1.3: Update Inventory, Architecture Blueprints, Roadmap & Engineering Log (DoD 3 Baseline)**
+  * Updated `docs/hardware_inventory.csv`, `docs/HomeLab_Project_Roadmap.csv`, `README.md`, `infrastructure/networking/README.md`, `infrastructure/storage/README.md`, `docs/architecture/README.md`, `docs/architecture/01-physical-network.md`, `docs/architecture/02-talos-os.md`, `docs/architecture/05-distributed-storage.md`, `docs/architecture/07-object-storage-foundation.md`, and created `docs/logs/epic-3-refactor-hardware-and-state-consolidation.md`.
 
-Phase 3: Validation (DoD 3 & 4)
-1. Execute `cilium status` via `talosctl` or `kubectl` exec to confirm eBPF map compilation and datapath health.
-2. Validate inter-node pod connectivity and DNS resolution across the cluster.
+#### Phase 1 Validation
+```bash
+# Verify all updated inventory, architecture, roadmap, and log files before committing to GitLab
+git status
+git diff docs/ infrastructure/ README.md
+```
 
+---
 
-Epic 3
+### Phase 2: Network DHCP Reservations, GitLab OpenTofu State Backend & Modular IaC Setup
+*Configure the router DHCP reservations for the new MAC-to-IP bindings, initialize GitLab's remote Terraform HTTP state backend, and refactor the OpenTofu configurations to support one-node-at-a-time provisioning.*
 
+* **Step 2.1: Configure Router DHCP/IPAM Address Reservations (`ER605`)**
+  * In the `TP-Link Omada ER605` router UI (`192.168.1.1`), update the VLAN 10 (`10.10.10.0/24`) DHCP Address Reservation table to bind each node's wired MAC address to its static IP so nodes booting into Talos Maintenance Mode at the primary workstation receive their designated IP:
+    * `controlplane-1` (`HP Compaq Pro 6300 SFF`) → `10.10.10.51` (`A0-48-1C-98-4E-E3` — unchanged)
+    * `worker-1` (`HP Pavilion 590-p0xxx`) → `10.10.10.52` (`28-3A-4D-07-EE-65` — replaces Lenovo on `.52`)
+    * `worker-2` (`Lenovo ideacenter 310S`) → `10.10.10.53` (`6C-4B-90-45-42-16` — moved from `.52` to `.53`, replacing retired Dell laptop)
+  * Verify that Control Plane VIP (`10.10.10.10`) and Cilium LoadBalancer IPAM pool (`10.10.10.17`–`10.10.10.25`) remain outside the dynamic DHCP allocation range.
+* **Step 2.2: Configure & Initialize GitLab HTTP State Backend (Zero-Token-in-Git)**
+  * In GitLab (`https://gitlab.com/nkester-personal-cloud/homelab`), create a Project Access Token with `api` scope for OpenTofu state management.
+  * Export `GITLAB_USER`, `GITLAB_TOKEN`, and `GITLAB_PROJECT_ID` in the local shell environment (strictly excluded from Git via `.gitignore`).
+  * Add `backend "http" {}` to `infrastructure/bootstrap/main.tf`, create `infrastructure/bootstrap/init-state.sh` (with `set -euo pipefail`) and `infrastructure/bootstrap/.env.example`, and run `./init-state.sh` to bind the workspace to GitLab (`homelab-bootstrap` state).
+* **Step 2.3: Verify Sidero Image Factory Schematics & Bootable USB**
+  * Because `controlplane-1` uses Intel `e1000e` (schematic `613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245:v1.13.7`) and both `worker-1` (`HP 590`) and `worker-2` (`Lenovo 310S`) use Realtek `r8169` (`RTL8111/8168`, schematic `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7`), verify the existing Talos `v1.13.7` USB installer stick is ready.
+* **Step 2.4: Refactor OpenTofu for Iterative One-Node-at-a-Time Provisioning**
+  * Refactor `infrastructure/bootstrap/main.tf` (with `variables.tf` / `terraform.tfvars`) so that:
+    * `talos_machine_secrets.this` is generated once on the first `tofu apply` and stored permanently in GitLab's encrypted HTTP state.
+    * `controlplane-1` (`10.10.10.51/24`, VIP `10.10.10.10`) installs Talos to `/dev/sda` (256GB SSD), mounts `/dev/sdb` (931.5GB HDD) for Longhorn, and sets `allowSchedulingOnControlPlanes = true`.
+    * Worker nodes are driven dynamically by a `for_each = var.worker_nodes` map (allowing `worker_nodes` to start empty `{}` during Control Plane provisioning and expand one node at a time as each worker is staged at the workstation).
+    * `helm_release.cilium` is configured with `kubeProxyReplacement = true`, `k8sServiceHost = "10.10.10.10"`, `l2announcements.enabled = true`, and `k8sClientRateLimit` (`qps = 50`, `burst = 100`).
 
-Feature 3.1: GitOps & Workflow Orchestration (ArgoCD & Argo Workflows)
-Phase 1: ArgoCD Installation & Bootstrapping (DoD 1 & 5)
-1. Declarative Manifest Preparation: Draft standard ArgoCD installation manifests / Helm chart values targeting namespace argocd.
-2. App-of-Apps Pattern Bootstrap:
-3. Create argocd/root-app.yaml as the parent application managing sub-applications across /infrastructure and /apps.
-4. Configure repository syncing pointing to https://github.com/nkester/homelab or local GitLab origin.
-5. Deployment Execution: Deploy ArgoCD via declarative manifests to the cluster.
-6. UI Reachability Check: Expose and verify ArgoCD UI reachability (DoD 1).
+#### Phase 2 Validation
+```bash
+# 1. Initialize OpenTofu against GitLab HTTP state backend
+cd infrastructure/bootstrap
+./init-state.sh
 
+# 2. Verify OpenTofu formatting and schema validity prior to booting the first node
+tofu fmt -check -recursive
+tofu validate
+```
 
-Phase 2: Argo Workflows Installation & DAG Verification (DoD 2 & 3)
-1. Controller Manifest Preparation: Define Argo Workflows controller and server manifests under GitOps management via ArgoCD (argocd/argo-workflows.yaml).
-2. Controller Activation: Sync and deploy Argo Workflows in argo-workflows namespace (DoD 2).
-3. Event-Driven DAG Verification:
-4. Author a sample DAG workflow manifest (examples/test-dag-workflow.yaml) establishing step dependencies (Directed Acyclic Graph).
-5. Submit and execute the DAG workflow to verify orchestration capability (DoD 3).
+---
 
+### Phase 3: Iterative Bare-Metal Node Provisioning (Workstation Staging → Enclave Placement — DoD 1)
+*Stage one machine at a time at the primary workstation, boot into Talos Maintenance Mode, apply its OpenTofu configuration (persisting state to GitLab), relocate the machine to its final resting place on the `TL-SG108E` switch, and verify health before moving to the next machine.*
 
-Phase 3: GitLab CI Integration & AWS Step Functions Parity (DoD 4)
-1. Webhook / API Trigger Setup: Configure ServiceAccount / API tokens enabling external pipeline orchestration.
-2. In-Cluster GitLab Runner Agent Deployment (ADR-0005): Deploy gitlab-runner in namespace gitlab-runner under ArgoCD management for enclave L2/L3 REST API submittal.
-3. GitLab CI Pipeline Mirroring: Update .gitlab-ci.yml with tags: [homelab-runner] to trigger Argo Workflows REST API submit endpoint upon pipeline events.
-4. Validate end-to-end execution flow mimicking cloud-native state machine workflows (DoD 4) [VERIFIED].
+* **Step 3.1: Stage, Provision & Relocate Control Plane Node (`controlplane-1` — `HP Compaq Pro 6300 SFF` at `10.10.10.51`)**
+  1. Connect `HP Compaq Pro 6300 SFF` at the primary workstation, boot from the Talos `v1.13.7` USB into **Maintenance Mode**, and verify it responds to ping at `10.10.10.51`.
+  2. Enumerate its logical Ethernet interface (`eno1`) and storage devices (`256GB SSD` and `931.5GB 2.5" HDD`) via `talosctl get links --nodes 10.10.10.51 --insecure` and `talosctl get disks --nodes 10.10.10.51 --insecure`.
+  3. With `worker_nodes = {}` in `terraform.tfvars`, execute `tofu apply` to push the Control Plane configuration, install Talos to the 256GB SSD, bootstrap `etcd`, establish Layer 2 VIP `10.10.10.10`, deploy Cilium CNI, and save State Version 1 (`talos_machine_secrets`) to GitLab.
+  4. Extract `talosconfig` (`tofu output -raw talosconfig > ~/.talos/config && chmod 600 ~/.talos/config`) and `kubeconfig` (`talosctl --nodes 10.10.10.51 kubeconfig ~/.kube/config && chmod 600 ~/.kube/config`).
+  5. Shut down `controlplane-1` (`talosctl shutdown --nodes 10.10.10.51`), move it to its final resting place on **`TL-SG108E` Port 1**, power it on, and verify `10.10.10.51` and VIP `10.10.10.10` report `Ready` before staging `worker-1`.
+* **Step 3.2: Stage, Provision & Relocate Worker Node 1 (`worker-1` — `HP Pavilion 590-p0xxx` at `10.10.10.52`)**
+  1. Connect `HP Pavilion 590-p0xxx` at the primary workstation, boot from the Talos `v1.13.7` USB into **Maintenance Mode**, and verify it responds to ping at `10.10.10.52`.
+  2. Enumerate its logical Ethernet interface (`enp2s0`) and dual 1TB SATA HDDs (`ST1000DM003` and `WD10EZEX`) via `talosctl get links --nodes 10.10.10.52 --insecure` and `talosctl get disks --nodes 10.10.10.52 --insecure`.
+  3. Add `worker-1` to the `worker_nodes` map in `terraform.tfvars` and execute `tofu apply` (OpenTofu reads `talos_machine_secrets` from GitLab State, provisions `worker-1`, and saves State Version 2 to GitLab).
+  4. Shut down `worker-1` (`talosctl shutdown --nodes 10.10.10.52`), move it to its final resting place on **`TL-SG108E` Port 2**, power it on, and verify it joins the cluster and reports `Ready` before staging `worker-2`.
+* **Step 3.3: Stage, Provision & Relocate Worker Node 2 (`worker-2` — `Lenovo ideacenter 310S` at `10.10.10.53`)**
+  1. Connect `Lenovo ideacenter 310S` at the primary workstation, boot from the Talos `v1.13.7` USB into **Maintenance Mode**, and verify it responds to ping at `10.10.10.53`.
+  2. Enumerate its logical Ethernet interface (`enp2s0`) and 465.8GB HDD (`ST500DM002`) via `talosctl get links --nodes 10.10.10.53 --insecure` and `talosctl get disks --nodes 10.10.10.53 --insecure`.
+  3. Add `worker-2` to the `worker_nodes` map in `terraform.tfvars` and execute `tofu apply` (saves State Version 3 to GitLab).
+  4. Shut down `worker-2` (`talosctl shutdown --nodes 10.10.10.53`), move it to its final resting place on **`TL-SG108E` Port 3**, power it on, and verify all 3 nodes report `Ready` in their final enclave positions.
 
+#### Phase 3 Validation
+```bash
+# 1. Executed per-node in Maintenance Mode at workstation (before that node's tofu apply):
+ping -c 3 <NODE_IP>
+talosctl get links --nodes <NODE_IP> --insecure
+talosctl get disks --nodes <NODE_IP> --insecure
 
-Phase 4: Validation & Agile DoD Audit (DoD 1–5)
-1. Empirical Validation Commands: Execute exact CLI checks to confirm all 5 success criteria [PASSED].
-2. Documentation & Action Plan Update: Created ADR-0005, 03-gitops-and-orchestration.md, epic-3.md, and updated project logs.
-Feature 3.2: CNI & Storage Integration (Longhorn & Network Policies)
-Phase 1: Architecture & Storage Readiness Audit (DoD 1 & 2)
-1. Pre-flight verification of Talos OS storage kernel extensions (iscsi-tools, util-linux-tools).
-2. Author declarative Longhorn storage manifests under GitOps management via ArgoCD (argocd/apps/longhorn.yaml).
+# 2. Executed after each node is moved to its final resting place on TL-SG108E:
+ping -c 3 10.10.10.10
+talosctl --nodes 10.10.10.51 health
+talosctl --nodes 10.10.10.51,10.10.10.52,10.10.10.53 get members
+kubectl get nodes -o wide
+cilium status
+```
+
+---
+
+### Phase 4: Declarative GitOps Bootstrap & Application Restoration (DoD 2)
+*Bootstrap ArgoCD declaratively via OpenTofu and reconcile the App-of-Apps tree (`argocd/root-app.yaml`) to restore all platform services and workloads.*
+
+* **Step 4.1: Provision Out-of-Band Bootstrap Secrets & Declarative ArgoCD Release**
+  * Enable the declarative ArgoCD bootstrap resources in OpenTofu (`helm_release` / `kubernetes_manifest` for namespace `argocd`, ArgoCD core installation, `argocd-cm` patch, and `argocd/root-app.yaml`) along with unversioned sensitive bootstrap secrets for External Secrets Operator (`gitlab-eso-token` in `external-secrets`) and GitLab Runner (`gitlab-runner-secret` in `gitlab-runner`), and execute `tofu apply`.
+* **Step 4.2: Verify Cascading ArgoCD Sync Waves (`argocd/root-app.yaml`)**
+  * Confirm ArgoCD automatically reconciles all previously deployed applications across Sync Waves `-1` through `2` without imperative `kubectl` mutations:
+    * **Sync Wave `-1`:** `system-config` (`argocd-cm` `CiliumIdentity` resource exclusion).
+    * **Sync Wave `0`:** `cilium-lb-ipam` (`10.10.10.17`–`10.10.10.25` pool & L2 policy), `external-secrets-operator`, `argo-workflows`, `gitlab-runner`.
+    * **Sync Wave `1`:** `external-secrets-config` (`ClusterSecretStore`), `longhorn` (distributed block storage across the upgraded multi-disk nodes & default `longhorn` StorageClass), `ingress-nginx` (LoadBalancer IP `10.10.10.17`), `minio-operator`, `knative-operator`.
+    * **Sync Wave `2`:** `minio-tenant` (S3 API & `velero-backups` bucket provisioning job), `knative-serving` (Knative Serving control plane & Kourier gateway on LoadBalancer IP `10.10.10.18`), `knative-test-service` (`helloworld-go`).
+
+#### Phase 4 Validation
+```bash
+# 1. Verify all ArgoCD Applications are Synced and Healthy (DoD 2)
+kubectl get applications -n argocd
+
+# 2. Verify Storage (Longhorn + MinIO), Secrets (ESO), Networking (LB VIPs), and Knative readiness (DoD 2)
+kubectl get nodes.longhorn.io -n longhorn-system
+kubectl get sc
+kubectl get clustersecretstore
+kubectl get externalsecrets -A
+kubectl get svc -A | grep LoadBalancer
+kubectl get pods -n minio-tenant
+kubectl get knativeserving -n knative-serving
+```
+
+---
+
+### Phase 5: Final Documentation Verification, ADR & Roadmap Closure (DoD 3)
+*Reconcile any empirical device path findings from Phase 3, record ADR-0010, and transition the Roadmap back to Feature 3.5.*
+
+* **Step 5.1: Reconcile Post-Provisioning Bootstrap SOP & Device Paths**
+  * Verify that the empirical disk paths (`/dev/sda`, `/dev/sdb`, `/dev/disk/by-id/...`) discovered during Phase 3 match `docs/architecture/01-physical-network.md`, `docs/architecture/02-talos-os.md`, and `infrastructure/bootstrap/README.md`.
+* **Step 5.2: Record ADR-0010 & Complete Feature 3.4-R Log**
+  * Author `docs/adr/0010-plane-1-remote-state-and-hardware-consolidation.md` and append Phase 3–4 validation outputs to `docs/logs/epic-3-refactor-hardware-and-state-consolidation.md`.
+* **Step 5.3: Update Project Roadmap to Resume Feature 3.5**
+  * Update `docs/HomeLab_Project_Roadmap.csv` and `README.md` to mark `Feature 3.4-R` as `Done` and transition `Feature 3.5 (Serverless Execution - Knative)` from `Paused` back to `In Progress`.
+
+#### Phase 5 Validation
+```bash
+# Verify all documentation, ADR, and roadmap updates are clean and committed
+git status
+git diff docs/ infrastructure/ README.md
+```
