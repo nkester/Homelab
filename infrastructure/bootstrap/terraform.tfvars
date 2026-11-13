@@ -30,14 +30,16 @@ control_plane = {
 # - For Step 3.3 (Worker 2 - Lenovo ideacenter 310S): uncomment "worker-2".
 # ------------------------------------------------------------------------------
 worker_nodes = {
-  # Uncomment for Step 3.2 after booting HP Pavilion 590-p0xxx into Maintenance Mode:
-  # "worker-1" = {
-  #   ip                   = "10.10.10.52"
-  #   interface            = "enp2s0"
-  #   install_disk         = "/dev/sda"
-  #   installer_image      = "factory.talos.dev/installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
-  #   mount_secondary_disk = true
-  # }
+  # Step 3.2: Worker 1 (HP Pavilion 590-p0xxx - 12GB RAM, Dual 1TB HDDs)
+  # Primary OS Disk:     /dev/sdc (1.0TB ST1000DM003-1SB1)
+  # Secondary Data Disk: /dev/sdd (1.0TB WDC WD10EZEX-60W mounted at /var/mnt/longhorn-extra)
+  "worker-1" = {
+    ip                   = "10.10.10.52"
+    interface            = "enp2s0"
+    install_disk         = "/dev/sdc"
+    installer_image      = "factory.talos.dev/installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
+    mount_secondary_disk = true
+  }
 
   # Uncomment for Step 3.3 after booting Lenovo ideacenter 310S into Maintenance Mode:
   # "worker-2" = {

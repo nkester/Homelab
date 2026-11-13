@@ -26,7 +26,7 @@ Recover from lost Talos Linux machine secrets (`talosconfig` / PKI root of trust
 | Logical Hostname | Cluster Role | Assigned Hardware | Wired MAC Address | TL-SG108E Switch Port | Static IP Address | VIP Binding | Pre-Enumerated NIC | Pre-Enumerated Disk(s) | Sidero Image Schematic Hash (`v1.13.7`) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `controlplane-1` | Control Plane | **System 1:** HP Compaq Pro 6300 SFF (20GB RAM) | `a0:48:1c:98:4e:e3` | Port 1 (VLAN 10) | `10.10.10.51/24` | `10.10.10.10` | `eno1` | `/dev/sda` (256GB SSD)<br>`/dev/sdb` (`ST1000LM024`, 931.5GB 2.5" HDD) | `613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245` |
-| `worker-1` | Worker Node 1 | **System 2:** HP Pavilion 590-p0xxx (12GB RAM) | `28:3a:4d:07:ee:65` | Port 2 (VLAN 10) | `10.10.10.52/24` | None | `enp2s0` | `/dev/sda` (`ST1000DM003`, 931.5GB)<br>`/dev/sdb` (`WD10EZEX`, 931.5GB) | `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09` |
+| `worker-1` | Worker Node 1 | **System 2:** HP Pavilion 590-p0xxx (12GB RAM) | `f4:39:09:33:dc:f9` | Port 2 (VLAN 10) | `10.10.10.52/24` | None | `enp2s0` | `/dev/sdc` (`ST1000DM003`, 931.5GB)<br>`/dev/sdd` (`WD10EZEX`, 931.5GB) | `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09` |
 | `worker-2` | Worker Node 2 | **System 3:** Lenovo ideacenter 310S (8GB RAM) | `6c:4b:90:45:42:16` | Port 3 (VLAN 10) | `10.10.10.53/24` | None | `enp2s0` | `/dev/sda` or `/dev/sdb` (`ST500DM002`, 465.8GB) | `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09` |
 
 ---

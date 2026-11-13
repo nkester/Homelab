@@ -24,7 +24,7 @@ Five candidate machines were inspected and benchmarked. Rather than running low-
 | Node Hostname | Role | Static IP / VIP | Hardware Chassis | CPU | Consolidated RAM | Consolidated Storage | Wired NIC & MAC |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **`controlplane-1`** | Control Plane | `10.10.10.51`<br>(VIP: `10.10.10.10`) | **HP Compaq Pro 6300 SFF** | Intel `i7-3770` @ 3.4GHz (4C/8T) | **20 GB DDR3** (`2x 8GiB + 2x 2GiB`) | • `/dev/sda`: **256 GB SATA SSD** (OS & `etcd`)<br>• `/dev/sdb`: **931.5 GB 2.5" HDD** (`ST1000LM024` from Dell 15R, mounted PCB-up in lower ODD bay via optical SATA/power) | Intel `82579LM` (`eno1`, `e1000e`)<br>`a0:48:1c:98:4e:e3` |
-| **`worker-1`** | Worker Node 01 | `10.10.10.52` | **HP Pavilion Desktop 590-p0xxx** | Intel `i5-8400` @ 2.8GHz (6C/6T) | **12 GB DDR4** (`8GB + 4GB` from HP 570; `11Gi` usable) | • `/dev/sda`: **931.5 GB 3.5" HDD** (`ST1000DM003-1SB1`, S/N: `ZN10H6ZF`)<br>• `/dev/sdb`: **931.5 GB 3.5" HDD** (`WDC WD10EZEX-60W`, S/N: `WD-WCC6Y1PYNSEJ` from HP 570) | Realtek `RTL8111/8168` (`enp2s0`, `r8169`)<br>`28:3a:4d:07:ee:65` |
+| **`worker-1`** | Worker Node 01 | `10.10.10.52` | **HP Pavilion Desktop 590-p0xxx** | Intel `i5-8400` @ 2.8GHz (6C/6T) | **12 GB DDR4** (`8GB + 4GB` from HP 570; `11Gi` usable) | • `/dev/sdc`: **931.5 GB 3.5" HDD** (`ST1000DM003-1SB1`, S/N: `ZN10H6ZF`)<br>• `/dev/sdd`: **931.5 GB 3.5" HDD** (`WDC WD10EZEX-60W`, S/N: `WD-WCC6Y1PYNSEJ` from HP 570) | Realtek `RTL8111/8168` (`enp2s0`, `r8169`)<br>`f4:39:09:33:dc:f9` |
 | **`worker-2`** | Worker Node 02 | `10.10.10.53` | **Lenovo ideacenter 310S-08IAP** | Intel `Celeron J3355` (2C/2T) | **8 GB DDR3L** (`1x 8GB PC3L-12800S` from Dell 15R) | • `/dev/sdb`: **465.8 GB 3.5" 7200 RPM HDD** (`ST500DM002-1SB10` retained for 7200 RPM I/O over 5400 RPM laptop drive) | Realtek `RTL8111/8168` (`enp2s0`, `r8169`)<br>`6c:4b:90:45:42:16` |
 
 ### 3. Architectural Gains
@@ -82,8 +82,24 @@ Five candidate machines were inspected and benchmarked. Rather than running low-
 
 ---
 
+### Step 3.2: Worker Node 1 (`worker-1` — HP Pavilion Desktop 590-p0xxx at `10.10.10.52`) — COMPLETED
+1. **Maintenance Mode & Empirical Interrogation:**
+   * Discovered wired Gigabit NIC (`enp2s0`) MAC address was `f4:39:09:33:dc:f9`. Corrected the `ER605` DHCP address reservation, updating dynamic lease `10.10.10.32` to static assignment `10.10.10.52`.
+   * Interrogated attached disks via `talosctl get discoveredvolumes --nodes 10.10.10.52 --insecure`:
+     * Discovered USB installer enumerated as `/dev/sdb`, shifting internal SATA drives to `/dev/sdc` (Seagate `ST1000DM003-1SB1`, 1.0 TB) and `/dev/sdd` (Western Digital `WD10EZEX-60W`, 1.0 TB).
+     * Wiped residual GPT and ext4 partitions from both drives (`talosctl wipe disk sdc`, `talosctl wipe disk sdd`).
+2. **OpenTofu Execution & Remote State Binding:**
+   * Uncommented `"worker-1"` in `infrastructure/bootstrap/terraform.tfvars` targeting `install_disk = "/dev/sdc"` and worker schematic `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7` (`iscsi-tools`, `util-linux-tools`, `realtek-firmware`).
+   * Executed `tofu apply tfplan`. OpenTofu pushed the worker machine configuration, installed Talos OS to `/dev/sdc`, and updated GitLab remote state (`homelab-bootstrap` State Version 2).
+   * Verified Talos `UserVolumeConfig` automatically partitioned `/dev/sdd` as `/dev/sdd1`, formatted with XFS, and mounted to `/var/mnt/longhorn-extra`.
+   * Two-stage health gate (`post_cni`) confirmed `worker-1` joined the cluster and reached `Ready`.
+3. **Relocation & Enclave Verification:**
+   * Safely shut down node via `talosctl shutdown --nodes 10.10.10.52`, removed USB drive, relocated chassis to the rack shelf, and patched to **Port 2** of switch `TL-SG108E` (`10.10.10.5`).
+   * Validated post-relocation health: ICMP ping to `10.10.10.52` returned 0% packet loss; `kubectl get nodes -o wide` confirmed both `controlplane-1` and `worker-1` online and `Ready`.
+
+---
+
 ## Next Steps (Pending Execution)
-* **Step 3.2:** Stage, provision, and relocate `worker-1` (`HP Pavilion 590-p0xxx` at `10.10.10.52`).
 * **Step 3.3:** Stage, provision, and relocate `worker-2` (`Lenovo ideacenter 310S` at `10.10.10.53`).
 * **Phase 4:** Declaratively bootstrap ArgoCD and reconcile Sync Waves `-1` through `2`.
 * **Phase 5:** Finalize post-provisioning device paths, record `ADR-0010`, and resume Feature 3.5.
