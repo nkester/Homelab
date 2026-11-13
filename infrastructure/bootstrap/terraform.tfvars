@@ -18,7 +18,7 @@ control_plane = {
   ip                   = "10.10.10.51"
   interface            = "eno1"
   install_disk         = "/dev/sda"
-  installer_image      = "factory.talos.dev/metal-installer/613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245:v1.13.7"
+  installer_image      = "factory.talos.dev/installer/613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245:v1.13.7"
   allow_scheduling     = true
   mount_secondary_disk = true
 }
@@ -35,7 +35,7 @@ worker_nodes = {
   #   ip                   = "10.10.10.52"
   #   interface            = "enp2s0"
   #   install_disk         = "/dev/sda"
-  #   installer_image      = "factory.talos.dev/metal-installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
+  #   installer_image      = "factory.talos.dev/installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
   #   mount_secondary_disk = true
   # }
 
@@ -44,7 +44,7 @@ worker_nodes = {
   #   ip                   = "10.10.10.53"
   #   interface            = "enp2s0"
   #   install_disk         = "/dev/sdb"
-  #   installer_image      = "factory.talos.dev/metal-installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
+  #   installer_image      = "factory.talos.dev/installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
   #   mount_secondary_disk = false
   # }
 }
