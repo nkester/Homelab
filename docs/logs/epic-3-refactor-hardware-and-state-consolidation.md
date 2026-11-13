@@ -59,7 +59,31 @@ Five candidate machines were inspected and benchmarked. Rather than running low-
 
 ---
 
-## Next Phases (Pending Execution)
-* **Phase 3:** Iteratively stage each node at the primary workstation (`controlplane-1` → `worker-1` → `worker-2`), apply its OpenTofu configuration, relocate to the `TL-SG108E` switch (`Port 1`, `Port 2`, `Port 3`), and validate cluster quorum.
-* **Phase 4:** Declaratively bootstrap ArgoCD and reconcile Sync Waves `-1` through `2` (`system-config`, `cilium-lb-ipam`, `external-secrets`, `argo-workflows`, `gitlab-runner`, `longhorn`, `ingress-nginx`, `minio`, `knative`).
+## Phase 3: Iterative Bare-Metal Node Provisioning (In Progress)
+
+### Step 3.1: Control Plane Node (`controlplane-1` — HP Compaq Pro 6300 SFF at `10.10.10.51`) — COMPLETED
+1. **Maintenance Mode & Disk Interrogation:**
+   * Booted from the Talos `v1.13.7` USB installer. Executed a clean disk reset from the bootloader to clear old Talos `STATE` and `EPHEMERAL` signatures.
+   * Interrogated hardware via `talosctl get discoveredvolumes --nodes 10.10.10.51 --insecure`:
+     * `/dev/sda`: `256 GB` SATA SSD (KingFast) — targeted as primary boot/OS/etcd disk.
+     * `/dev/sdb`: `1.0 TB` SATA rotational HDD (`ST1000LM024`) — confirmed raw/wiped with zero leftover partitions.
+2. **OpenTofu Execution & Remote State Binding:**
+   * Applied `tofu plan -out=tfplan` with `worker_nodes = {}`.
+   * OpenTofu generated `talos_machine_secrets`, configured the node with Talos native Layer 2 VIP `10.10.10.10`, installed Talos `v1.13.7` to `/dev/sda`, and initialized `etcd`.
+   * The OpenTofu state was automatically persisted to the GitLab HTTP remote backend (`homelab-bootstrap` State Version 1).
+   * Helm provider deployed Cilium `v1.15.5` with `kubeProxyReplacement = true`, native eBPF routing, and L2 announcements.
+   * `data.talos_cluster_health.post_cni` validated full cluster readiness with `skip_kubernetes_checks = false`.
+3. **Storage Mount & Credential Extraction:**
+   * Verified Talos `UserVolumeConfig` automatically partitioned `/dev/sdb`, formatted with XFS, and mounted to `/var/mnt/longhorn-extra` (`/dev/sdb1`).
+   * Extracted `talosconfig` and `kubeconfig` to local directories (`~/.talos/config`, `~/.kube/config`).
+4. **Relocation & Enclave Verification:**
+   * Safely shut down node via `talosctl shutdown --nodes 10.10.10.51`, removed USB, moved chassis to the cluster shelf, and patched to **Port 1** of switch `TL-SG108E` (`10.10.10.5`).
+   * Validated post-relocation health: ICMP ping to VIP `10.10.10.10` and IP `10.10.10.51` returned 0% packet loss; `talosctl health` reported all etcd, apid, kubelet, and static pod checks `OK`; `kubectl get nodes -o wide` reported `controlplane-1` as `Ready`.
+
+---
+
+## Next Steps (Pending Execution)
+* **Step 3.2:** Stage, provision, and relocate `worker-1` (`HP Pavilion 590-p0xxx` at `10.10.10.52`).
+* **Step 3.3:** Stage, provision, and relocate `worker-2` (`Lenovo ideacenter 310S` at `10.10.10.53`).
+* **Phase 4:** Declaratively bootstrap ArgoCD and reconcile Sync Waves `-1` through `2`.
 * **Phase 5:** Finalize post-provisioning device paths, record `ADR-0010`, and resume Feature 3.5.
