@@ -57,4 +57,4 @@ worker_nodes = {
 # Keep false during Phase 3 node staging; set to true in Phase 4 once all 3 nodes
 # are running in their final enclave positions on the TL-SG108E switch.
 # ------------------------------------------------------------------------------
-enable_argocd_bootstrap = false
+enable_argocd_bootstrap = true
