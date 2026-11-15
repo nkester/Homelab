@@ -99,7 +99,28 @@ Five candidate machines were inspected and benchmarked. Rather than running low-
 
 ---
 
+### Step 3.3: Worker Node 2 (`worker-2` — Lenovo ideacenter 310S-08IAP at `10.10.10.53`) — COMPLETED
+1. **Maintenance Mode & Empirical Interrogation:**
+   * Booted from the Talos `v1.13.7` USB installer into Maintenance Mode.
+   * Acquired `10.10.10.53` on `enp2s0` (MAC: `6c:4b:90:45:42:16`).
+   * Interrogated disk layout via `talosctl get discoveredvolumes --nodes 10.10.10.53 --insecure`:
+     * USB drive enumerated as `/dev/sdb`.
+     * Internal 500GB HDD (`ST500DM002-1SB10`) enumerated as `/dev/sdc` (confirmed clean with zero leftover partitions).
+2. **OpenTofu Execution & Remote State Binding:**
+   * Configured `"worker-2"` in `terraform.tfvars` targeting `install_disk = "/dev/sdc"`, worker schematic `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7`, and `mount_secondary_disk = false`.
+   * Executed `tofu apply tfplan`. OpenTofu applied the configuration, installed Talos OS to `/dev/sdc`, and persisted **State Version 3** to the GitLab remote HTTP backend (`homelab-bootstrap`).
+   * Health gate (`post_cni`) confirmed all three cluster nodes reporting `Ready`.
+3. **Relocation & Enclave Verification (DoD 1 Verified):**
+   * Safely shut down node via `talosctl shutdown --nodes 10.10.10.53`, removed USB drive, relocated chassis to the rack shelf, and patched to **Port 3** of switch `TL-SG108E` (`10.10.10.5`).
+   * Validated post-relocation health across the switch: ICMP pings to `10.10.10.10` (VIP), `10.10.10.51`, `10.10.10.52`, and `10.10.10.53` all returned 0% packet loss.
+   * Talos API `talosctl --nodes 10.10.10.51 health` confirmed etcd, apid, kubelet, and static pod checks `OK`.
+   * `talosctl get members` confirmed all three physical members active.
+   * `kubectl get nodes -o wide` confirmed all 3 nodes `Ready`.
+   * `kubectl get pods -n kube-system -o wide` confirmed Cilium eBPF agent pods running across all 3 nodes.
+   * **DoD 1 Complete:** All physical nodes re-established through OpenTofu statements backed by GitLab-managed Terraform state, with Talos API and Kubernetes control plane fully verified.
+
+---
+
 ## Next Steps (Pending Execution)
-* **Step 3.3:** Stage, provision, and relocate `worker-2` (`Lenovo ideacenter 310S` at `10.10.10.53`).
-* **Phase 4:** Declaratively bootstrap ArgoCD and reconcile Sync Waves `-1` through `2`.
-* **Phase 5:** Finalize post-provisioning device paths, record `ADR-0010`, and resume Feature 3.5.
+* **Phase 4:** Declaratively bootstrap ArgoCD and reconcile Sync Waves `-1` through `2` (`system-config`, `cilium-lb-ipam`, `external-secrets`, `argo-workflows`, `gitlab-runner`, `longhorn`, `ingress-nginx`, `minio`, `knative`) (DoD 2).
+* **Phase 5:** Finalize post-provisioning device paths, record `ADR-0010`, and resume Feature 3.5 (DoD 3).

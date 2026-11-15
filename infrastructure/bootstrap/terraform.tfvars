@@ -41,14 +41,15 @@ worker_nodes = {
     mount_secondary_disk = true
   }
 
-  # Uncomment for Step 3.3 after booting Lenovo ideacenter 310S into Maintenance Mode:
-  # "worker-2" = {
-  #   ip                   = "10.10.10.53"
-  #   interface            = "enp2s0"
-  #   install_disk         = "/dev/sdb"
-  #   installer_image      = "factory.talos.dev/installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
-  #   mount_secondary_disk = false
-  # }
+  # Step 3.3: Worker 2 (Lenovo ideacenter 310S - 8GB RAM, 500GB HDD)
+  # Primary OS Disk: /dev/sdc (465.8GB ST500DM002-1SB10)
+  "worker-2" = {
+    ip                   = "10.10.10.53"
+    interface            = "enp2s0"
+    install_disk         = "/dev/sdc"
+    installer_image      = "factory.talos.dev/installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7"
+    mount_secondary_disk = false
+  }
 }
 
 # ------------------------------------------------------------------------------
