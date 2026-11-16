@@ -35,9 +35,9 @@ graph TD
 
     subgraph L1 [Layer I: Physical Infrastructure]
         ER605[ER605 Router]
-        HP[HP Control Node]
-        W01[Lenovo Worker 01]
-        W02[Dell Worker 02]
+        HP[HP 6300 Control Node]
+        W01[HP 590 Worker 01]
+        W02[Lenovo 310S Worker 02]
     end
 
     %% Connectivity
@@ -63,4 +63,5 @@ graph TD
 | GitOps & Orchestration | Layer III/IV | Complete | [04-gitops-and-orchestration.md](./04-gitops-and-orchestration.md) |
 | Longhorn Storage | Layer III | Complete | [05-distributed-storage.md](./05-distributed-storage.md) |
 | External Secrets | Layer III | Complete | [06-external-secrets-integration.md](./06-external-secrets-integration.md) |
-| Object Storage (MinIO) | Layer III | In Progress | [07-object-storage-foundation.md](./07-object-storage-foundation.md) |
+| Object Storage (MinIO) | Layer III | Complete | [07-object-storage-foundation.md](./07-object-storage-foundation.md) |
+| Serverless Execution (Knative) | Layer III | In Progress | [08-serverless-execution.md](./08-serverless-execution.md) |

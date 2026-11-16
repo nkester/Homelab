@@ -17,16 +17,16 @@ graph TD
     end
 
     subgraph Cluster ["Kubernetes Cluster (Talos Linux)"]
-        subgraph ControlNode ["HP Control Node (10.10.10.51)"]
+        subgraph ControlNode ["HP 6300 Control Node (10.10.10.51 - 256GB SSD + 931.5GB HDD)"]
             ControlManager["Longhorn Manager / UI"]
         end
 
-        subgraph Worker1 ["Lenovo Worker Node 01 (10.10.10.52)"]
+        subgraph Worker1 ["HP Pavilion 590 Worker Node 01 (10.10.10.52 - Dual 931.5GB HDDs)"]
             DaemonSet1["Longhorn CSI Plugin & Engine"]
             Replica1["Volume Replica 1<br/>(/var/lib/longhorn)"]
         end
 
-        subgraph Worker2 ["Dell Worker Node 02 (10.10.10.53)"]
+        subgraph Worker2 ["Lenovo 310S Worker Node 02 (10.10.10.53 - 465.8GB HDD)"]
             DaemonSet2["Longhorn CSI Plugin & Engine"]
             Replica2["Volume Replica 2<br/>(/var/lib/longhorn)"]
         end

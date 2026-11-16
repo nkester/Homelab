@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: knative-serving
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: homelab
+    platform.homelab/layer: serverless
+    platform.homelab/category: runtime
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/nkester/homelab.git'
+    targetRevision: argocd-deploy
+    path: infrastructure/serverless/knative/serving
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: knative-serving
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
