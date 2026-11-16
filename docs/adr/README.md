@@ -19,5 +19,5 @@ Scope: Historical records of pivot points.
 | [ADR-0007](./0007-external-secrets-provider.md) | External Secrets Provider (GitLab CI/CD Variables) | Accepted | 2026-08-17 |
 | [ADR-0008](./0008-object-storage-minio.md) | Object Storage Foundation (MinIO Operator & Tenant) | Accepted | 2026-08-18 |
 | [ADR-0009](./0009-serverless-knative-ingress.md) | Serverless Execution & Ingress Strategy (Knative + Kourier vs NGINX) | Accepted | 2026-08-25 |
-| [ADR-0010](./0010-plane-1-remote-state-and-hardware-consolidation.md) | Plane 1 Remote State and Hardware Consolidation | In Progress | 2026-11-15 |
+| [ADR-0010](./0010-plane-1-remote-state-and-hardware-consolidation.md) | Plane 1 Remote State and Hardware Consolidation | Accepted | 2026-11-15 |
 | [ADR-0011](./0011-minio-foss-deprecation-and-s3-migration-strategy.md) | MinIO FOSS Deprecation and Strategic S3 Migration Path | Accepted | 2026-11-15 |

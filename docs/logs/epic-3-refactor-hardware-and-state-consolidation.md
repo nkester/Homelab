@@ -121,6 +121,37 @@ Five candidate machines were inspected and benchmarked. Rather than running low-
 
 ---
 
-## Next Steps (Pending Execution)
-* **Phase 4:** Declaratively bootstrap ArgoCD and reconcile Sync Waves `-1` through `2` (`system-config`, `cilium-lb-ipam`, `external-secrets`, `argo-workflows`, `gitlab-runner`, `longhorn`, `ingress-nginx`, `minio`, `knative`) (DoD 2).
-* **Phase 5:** Finalize post-provisioning device paths, record `ADR-0010`, and resume Feature 3.5 (DoD 3).
+## Phase 4: Declarative GitOps Bootstrap & Application Restoration (Completed)
+
+### 1. Declarative ArgoCD Bootstrap via OpenTofu
+* Discarded unnamespaced Talos `extraManifests` (which deployed ArgoCD pods improperly into the `default` namespace).
+* Configured `enable_argocd_bootstrap = true` in `infrastructure/bootstrap/terraform.tfvars`.
+* Implemented OpenTofu resource `helm_release.argocd` in `infrastructure/bootstrap/main.tf` targeting namespace `argocd` (`argo-cd` chart `v6.7.18`, `crds.install = false`, `server.extraArgs = ["--insecure"]`), injecting the root app-of-apps manifest (`root-app.yaml`) via `extraObjects`.
+* Applied via `tofu apply tfplan`. ArgoCD bootstrapped cleanly in namespace `argocd`.
+
+### 2. Out-of-Band Secrets & Runner Restoration
+* Injected `gitlab-secret-token` into `external-secrets` namespace to re-establish the connection between External Secrets Operator (`gitlab-secret-store`) and the GitLab project CI/CD variables API.
+* Injected `gitlab-runner-secret` into `gitlab-runner` namespace. Verified in GitLab UI that the in-cluster runner connected and registered online and idle.
+
+### 3. Application Restoration Across Sync Waves
+* **Wave -1 (System Config):** Reconciled dynamic `CiliumIdentity` pruning exclusions cleanly (`system-config`).
+* **Wave 0 (Core Networking & Secrets):** Reconciled `cilium-lb-ipam` (allocating VIP `10.10.10.18` to NGINX Ingress and `10.10.10.17` to Knative Kourier), `external-secrets-operator`, and `gitlab-runner`.
+* **Wave 1 (Storage & Ingress Foundation):** Reconciled `external-secrets-config`, `longhorn` (all nodes active), `ingress-nginx` (VIP `10.10.10.18`), `minio-operator` (`v6.0.2`), and `knative-operator`.
+* **Wave 2 (Data Layer & Serverless):** Reconciled `knative-serving`, `minio-tenant`, and `argo-workflows`.
+
+### 4. S3 Storage & MinIO Image Upstream Pivot
+* Discovered MinIO archived community editions and privatized public Docker Hub and Quay repositories.
+* Pinned `infrastructure/storage/minio/tenant.yaml` to `pgsty/minio:RELEASE.2026-08-04T00-00-00Z`.
+* Pinned `infrastructure/bootstrap/argo-workflows/kustomization.yaml` via Kustomize `images:` rewrite to `pgsty/minio:RELEASE.2026-08-04T00-00-00Z`.
+* Documented upstream pivot in **ADR-0011** and scheduled strategic migration under **Feature 4.3 (SeaweedFS / Garage)**.
+* Cycled `minio-tenant` via the ArgoCD App-of-Apps self-healing loop to bypass the operator's offline upgrade deadlock. Verified both tenant pods reached `2/2 Running` with all 4x 50Gi Longhorn PVCs mounted and bound.
+* **DoD 2 Complete:** All 14 applications restored declaratively through ArgoCD without imperative mutations.
+
+---
+
+## Phase 5: Final Documentation Verification, ADR & Roadmap Closure (Completed)
+
+* **Documentation & Topology:** Reconciled `hardware_inventory.csv`, `01-physical-network.md`, `02-talos-os.md`, and `infrastructure/bootstrap/README.md`.
+* **ADR Recorded:** Accepted and committed [docs/adr/0010-plane-1-remote-state-and-hardware-consolidation.md](../adr/0010-plane-1-remote-state-and-hardware-consolidation.md) and [docs/adr/0011-minio-foss-deprecation-and-s3-migration-strategy.md](../adr/0011-minio-foss-deprecation-and-s3-migration-strategy.md).
+* **Roadmap Transition:** Marked **Feature 3.4-R** as `Done` and transitioned **Feature 3.5 (Serverless Execution - Knative)** to `In Progress` in [docs/HomeLab_Project_Roadmap.csv](../HomeLab_Project_Roadmap.csv) and root [README.md](../../README.md).
+* **DoD 3 Complete:** All documentation, IPAM tables, ADRs, and Roadmap updated. Feature 3.4-R formally closed.

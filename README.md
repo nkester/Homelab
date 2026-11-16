@@ -125,11 +125,11 @@ Legend:
   
       - Provide S3 API functionality to support data pipelines and backups.  
 
-  🔵 Feature 3.4-R: Plane 1 State & Hardware Consolidation Refactor
+  ✅ Feature 3.4-R: Plane 1 State & Hardware Consolidation Refactor
 
       - Rebuild cluster with GitLab-managed OpenTofu state, consolidate desktop RAM/storage, and retire legacy laptop hardware.
 
-  🔲 Feature 3.5: Serverless Execution through Knative
+  🔵 Feature 3.5: Serverless Execution through Knative
 
       - Implement Knative Serving to mirror AWS Lambda capabilities.
 
