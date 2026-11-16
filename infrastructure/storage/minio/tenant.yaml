@@ -4,7 +4,7 @@ metadata:
   name: minio
   namespace: minio-tenant
 spec:
-  image: quay.io/minio/minio:RELEASE.2024-08-03T04-33-23Z
+  image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
   configuration:
     name: minio-creds
   pools:

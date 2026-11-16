@@ -56,25 +56,8 @@ data "talos_machine_configuration" "controlplane" {
               name = "none"
             }
           }
-          extraManifests = var.enable_argocd_bootstrap ? [
-            "https://raw.githubusercontent.com/argoproj/argo-cd/v2.11.0/manifests/install.yaml"
-          ] : []
-          inlineManifests = var.enable_argocd_bootstrap ? [
-            {
-              name = "argocd-namespace"
-              contents = yamlencode({
-                apiVersion = "v1"
-                kind       = "Namespace"
-                metadata = {
-                  name = "argocd"
-                }
-              })
-            },
-            {
-              name     = "argocd-root-app"
-              contents = file("${path.module}/../../argocd/root-app.yaml")
-            }
-          ] : []
+          extraManifests  = []
+          inlineManifests = []
         }
         machine = {
           install = {
@@ -376,4 +359,36 @@ data "talos_cluster_health" "post_cni" {
   worker_nodes           = [for k, v in var.worker_nodes : v.ip]
   endpoints              = data.talos_client_configuration.this.endpoints
   skip_kubernetes_checks = false
+}
+
+# ==============================================================================
+# GitOps Bootstrap Layer: ArgoCD & Root App-of-Apps (Phase 4)
+# Namespace: argocd
+# ==============================================================================
+
+resource "helm_release" "argocd" {
+  count            = var.enable_argocd_bootstrap ? 1 : 0
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  version          = "6.7.18"
+  namespace        = "argocd"
+  create_namespace = true
+  cleanup_on_fail  = true
+
+  values = [
+    yamlencode({
+      crds = {
+        install = false
+      }
+      server = {
+        extraArgs = ["--insecure"]
+      }
+      extraObjects = [
+        yamldecode(file("${path.module}/../../argocd/root-app.yaml"))
+      ]
+    })
+  ]
+
+  depends_on = [data.talos_cluster_health.post_cni]
 }
