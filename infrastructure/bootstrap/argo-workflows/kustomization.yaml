@@ -8,3 +8,9 @@ resources:
   - gitlab-runner-rbac.yaml
   - dag-workflow-template.yaml
 
+images:
+  - name: minio/minio
+    newName: pgsty/minio
+    newTag: RELEASE.2026-08-04T00-00-00Z
+
+

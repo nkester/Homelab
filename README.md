@@ -143,6 +143,10 @@ Legend:
 
       - Implement automated SSL/TLS and HTTP routing.
 
+  🔲 Feature 4.3: FOSS S3 Object Storage Migration (SeaweedFS / Garage)
+
+      - Transition cluster object storage from deprecated MinIO to an unencumbered FOSS S3 backend.
+
 🔲 Epic 5: Observability & Security Posture
 
   🔲 Feature 5.1: LGTM Stack Deployment

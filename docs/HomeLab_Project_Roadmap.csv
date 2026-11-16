@@ -79,6 +79,10 @@ Feature,4.1,Longhorn Distributed Storage,"Implementing persistent, replicated bl
  2. Volume replication verified across nodes"
 Feature,4.2,Ingress & cert-manager,Automated SSL/TLS and HTTP routing.,To Do,"1. cert-manager issuing Let's Encrypt certificates
  2. Ingress controller routing external traffic"
+Feature,4.3,FOSS S3 Object Storage Migration (SeaweedFS / Garage),Transition from deprecated MinIO to an unencumbered FOSS S3 backend (SeaweedFS or Garage) to eliminate supply-chain debt (ADR-0011).,To Do,"1. FOSS S3 backend deployed via ArgoCD.
+ 2. Data migration from MinIO completed.
+ 3. Dependent workloads (Argo Workflows/Velero) re-routed to new S3 endpoint.
+ 4. MinIO operator and tenant cleanly decommissioned."
 Epic,5,Observability & Security Posture,"Implementing monitoring, alerting, hardening, and zero-trust policies.",To Do,"1. Metrics, logs, and traces visible in Grafana
  2. Security network policies enforced
  3. Scheduled backups verified"
