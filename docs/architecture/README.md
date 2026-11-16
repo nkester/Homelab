@@ -35,9 +35,9 @@ graph TD
 
     subgraph L1 [Layer I: Physical Infrastructure]
         ER605[ER605 Router]
-        HP[HP Control Node]
-        W01[Lenovo Worker 01]
-        W02[Dell Worker 02]
+        HP[HP 6300 Control Node]
+        W01[HP 590 Worker 01]
+        W02[Lenovo 310S Worker 02]
     end
 
     %% Connectivity

@@ -17,18 +17,19 @@
 | **TL-SG108E** | Switch | `10.10.10.5` | [Logged in Router] | Static |
 
 ### 2.2 Kubernetes Bare-Metal Compute Block
-| Hostname | Role | IP Address | MAC Address | Allocation |
-| :--- | :--- | :--- | :--- | :--- |
-| **HP-Control** | Talos Control Plane | `10.10.10.51` | `A0-48-1C-98-4E-E3` | Static (OS) / Dummy DHCP |
-| **W01-Lenovo** | Talos Worker 01 | `10.10.10.52` | `6C-4B-90-45-42-16` | Static (OS) / Dummy DHCP |
-| **W02-Dell** | Talos Worker 02 | `10.10.10.53` | `EC-F4-BB-7A-E1-0E` | Static (OS) / Dummy DHCP |
+| Hostname | Role | Hardware Model | IP Address | MAC Address | Allocation |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **controlplane-1** | Talos Control Plane | HP Compaq Pro 6300 SFF (20GB RAM, 256GB SSD + 931.5GB HDD) | `10.10.10.51` | `A0-48-1C-98-4E-E3` | Static (OS) / DHCP Reservation |
+| **worker-1** | Talos Worker 01 | HP Pavilion 590-p0xxx (12GB RAM, Dual 931.5GB HDDs) | `10.10.10.52` | `28-3A-4D-07-EE-65` | Static (OS) / DHCP Reservation |
+| **worker-2** | Talos Worker 02 | Lenovo ideacenter 310S-08IAP (8GB RAM, 465.8GB HDD) | `10.10.10.53` | `6C-4B-90-45-42-16` | Static (OS) / DHCP Reservation |
 
 ### 2.3 Kubernetes Virtual IP (VIP) & Routing Blocks
 | Service | Purpose | IP / Range | Manager |
 | :--- | :--- | :--- | :--- |
-| **API Server VIP** | HA Control Plane | `10.10.10.10` | `kube-vip` |
-| **DNS / Ingress** | Primary `kester.lab` entry | `10.10.10.101` | Cilium L2 |
-| **LB Pool** | Additional Ingress Services | `10.10.10.102 - .120` | Cilium IPAM |
+| **API Server VIP** | HA Control Plane | `10.10.10.10` | Talos Native L2 VIP |
+| **NGINX Ingress** | Primary North-South Ingress | `10.10.10.17` | Cilium LB IPAM + L2 |
+| **Kourier Gateway** | Knative Serverless Ingress | `10.10.10.18` | Cilium LB IPAM + L2 |
+| **LB Pool** | Shared LoadBalancer Pool | `10.10.10.17 - 10.10.10.25` | Cilium LB IPAM |
 
 ### 2.4 CNI & Pod Networking Block
 | Service | Purpose | IP / Range | Manager |
