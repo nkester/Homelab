@@ -24,6 +24,8 @@ Deconstruct the Feature into a sequential, phased action plan.
 
 Map every phase directly to a specific DoD criterion from the roadmap.
 
+Record the phased plan in the ./docs/implementation plans directory with the format: 'feature_#-#_implementation_plan.md'
+
 Detail the specific GitOps, Helm, or YAML configurations required for each phase, strictly adhering to immutable, declarative FOSS patterns.
 
 Mandatory Validation Block:

@@ -1,3 +1,7 @@
+# The "What" - System State 
+
+ It describes the system as it exists right now. If you handed your laptop to another engineer, this is where they would look to understand how to interact with the lab.
+
 # The "How" - System Intent
 
 This is the Blueprint. It describes the logical and theoretical design of the system, often independent of the specific hardware used.

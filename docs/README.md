@@ -1,19 +1,21 @@
-# TEMPORARY: The "What" - System State
-
-This is the Living Manual. It describes the system as it exists right now. If you handed your laptop to another engineer, this is where they would look to understand how to interact with the lab.
-
-Content: The README.md we discussed (Layers/Functions), User Guides, and standard operating procedures (SOPs).
-
-Scope: Current configurations, IP tables, and physical cabling maps.
-
 # GitOps Lab: Functional System Manual
 
+This is the Living Manual. It points the reader to pertinent information about the system and the process.
+
 ## 1. System Mission & Strategy
-This repository implements an immutable, bare-metal Kubernetes platform designed for Operations Research and Systems Analysis (ORSA). It utilizes a **GitOps-driven** lifecycle, ensuring that the cluster state is always reproducible, secure, and documented.
+This repository implements an immutable, bare-metal Kubernetes platform designed for Operations Research and Systems Analysis (ORSA) workflows and analyses. It utilizes a **GitOps-driven** lifecycle, ensuring that the cluster state is always reproducible, secure, and documented.
 
+## 2. File Structure  
 
+```text
+.
+├── adr                   # Architectural Decision Record (ADR): The "Why" decisions were made that resulted in this architecture
+├── architecture          # The "What" - describing the system state 
+├── implementation plans  # The "How" - describing how we built the architecture
+└── logs                  # Project logs describing pivots, changes, and milestones.
+```
 
-## 2. Platform Architecture (4-Tier Framework)
+## 3. Platform Architecture (4-Tier Framework)
 
 Documentation and configurations are organized by functional layers to isolate failure domains and simplify lifecycle management.
 
