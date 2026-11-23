@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: longhorn-replication-writer
+  namespace: storage-validation
+spec:
+  replicas: 1
+  strategy:
+    # Required for ReadWriteOnce (RWO) block volumes to avoid multi-attach deadlocks
+    type: Recreate
+  selector:
+    matchLabels:
+      app: longhorn-replication-writer
+  template:
+    metadata:
+      labels:
+        app: longhorn-replication-writer
+    spec:
+      containers:
+        - name: writer
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -eu
+            - -c
+            - |
+              echo "longhorn-replication-verified-$(hostname)" > /data/replication-verify.txt
+              sha256sum /data/replication-verify.txt > /data/replication-verify.sha256
+              sha256sum -c /data/replication-verify.sha256
+              sleep infinity
+          volumeMounts:
+            - name: test-vol
+              mountPath: /data
+      volumes:
+        - name: test-vol
+          persistentVolumeClaim:
+            claimName: longhorn-replication-test
