@@ -4,9 +4,9 @@
 
 ### Architecture & State Management
 This module utilizes OpenTofu to generate deterministic cryptographic material, machine secrets, and YAML configuration patches for the immutable Talos Linux nodes. 
-* **Provider:** `siderolabs/talos` locked to `v0.12.0-alpha.5`.
-* **State:** Local `terraform.tfstate`.  
-* **CRITICAL:** State files contain plaintext cryptographic root-of-trust material and are strictly excluded from version control via `.gitignore`.
+* **Provider:** `siderolabs/talos` locked to `v0.12.0-alpha.5`, `hashicorp/helm` locked to `~> 2.12`.
+* **State Backend:** GitLab-managed HTTP Remote State Backend (`homelab-bootstrap`) with distributed HTTP state locking (`POST /lock`, `DELETE /lock`).
+* **Zero-Token-in-Git:** Backend credentials and project variables are managed via local `.env` (git-ignored) and initialized via `./init-state.sh`. Plaintext state containing Talos PKI machine secrets is persisted securely in GitLab.
 
 ### Hardware Configuration Exceptions
 Talos implicit network configurations are overridden via `config_patches` to ensure high-availability routing and stable DHCP leases.
@@ -44,18 +44,22 @@ When a bare-metal node requires physical recovery or initial provisioning into M
 ### Execution SOP
 To provision a node or rebuild the cluster from a bare-metal state:
 
-1. **Initialize Workspace:**
-   `tofu init`
-2. **Apply Configuration State:**
-   `tofu apply`
-3. **Extract Talos Client Configuration:**
+1. **Configure Environment:**
+   Copy `.env.example` to `.env` and populate `GITLAB_PROJECT_ID` and `GITLAB_ACCESS_TOKEN`.
+2. **Initialize Remote Backend:**
+   `./init-state.sh`
+3. **Plan Configuration State:**
+   `tofu plan -out=tfplan`
+4. **Apply Configuration State:**
+   `tofu apply tfplan`
+5. **Extract Talos Client Configuration:**
    `tofu output -raw talosconfig > ~/.talos/config`
    `chmod 600 ~/.talos/config`
    `export TALOSCONFIG=~/.talos/config`
-4. **Extract Kubernetes Credentials (Post-Bootstrap):**
+6. **Extract Kubernetes Credentials (Post-Bootstrap):**
    `talosctl --nodes 10.10.10.51 kubeconfig ~/.kube/config`
    `chmod 600 ~/.kube/config`
-5. **Check Nodes on the Cluster:**
+7. **Check Nodes on the Cluster:**
    `kubectl get nodes -o wide`
 
 
