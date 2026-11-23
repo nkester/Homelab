@@ -30,7 +30,8 @@ Below is the folder structure for the project:
 │   ├── adr                  # Architectural Decision Records (The "Why")
 │   ├── architecture         # Mermaid/Python diagrams and technical deep-dives
 │   ├── implementation plans # The plan of action for each feature
-│   └── logs                 # Chronological project logs and epic summaries
+│   ├── logs                 # Chronological project logs and epic summaries
+│   └── runbooks             # Day-2 operational runbooks (UI/API access & diagnostics)
 ├── infrastructure           # The "Platform" layer (Cluster-wide services)  
 │   ├── bootstrap            # Talos machine configs (templates)
 │   │   ├── argo-workflows   # Argo Workflows manifests
@@ -118,7 +119,7 @@ Legend:
   
       - Deploying eBPF-based networking for the cluster.
 
-🔵 Epic 3: GitOps & Analytic Stack  
+✅ Epic 3: GitOps & Analytic Stack  
 
   ✅ Feature 3.1: GitOps & Workflow Orchestration (ArgoCD & Argo Workflows) 
   
@@ -140,13 +141,13 @@ Legend:
 
       - Rebuild cluster with GitLab-managed OpenTofu state, consolidate desktop RAM/storage, and retire legacy laptop hardware.
 
-  🔵 Feature 3.5: Serverless Execution through Knative
+  ✅ Feature 3.5: Serverless Execution through Knative
 
       - Implement Knative Serving to mirror AWS Lambda capabilities.
 
-🔲 Epic 4: Core Infrastructure Services
+🔵 Epic 4: Core Infrastructure Services
 
-  🔲 Feature 4.1: Longhorn Distributed Storage
+  🔵 Feature 4.1: Longhorn Distributed Storage
 
       - Implement persistent, replicated block storage.
 
@@ -157,6 +158,10 @@ Legend:
   🔲 Feature 4.3: FOSS S3 Object Storage Migration (SeaweedFS / Garage)
 
       - Transition cluster object storage from deprecated MinIO to an unencumbered FOSS S3 backend.
+
+  🔲 Feature 4.4: Platform Lifecycle & Version Debt Remediation
+
+      - Execute planned declarative upgrades across Talos OS, Knative Operator/Serving, and core Helm charts prior to Epic 5 observability and Zero-Trust hardening.
 
 🔲 Epic 5: Observability & Security Posture
 
