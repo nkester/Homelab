@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: knative-event-trigger
+  namespace: argo-workflows
+  labels:
+    app.kubernetes.io/part-of: homelab
+    platform.homelab/layer: serverless
+    platform.homelab/category: event-trigger
+spec:
+  entrypoint: trigger-serverless-dag
+  arguments:
+    parameters:
+      # Cluster-internal Knative DNS routes through Knative Activator for scale-from-zero
+      - name: target_url
+        value: "http://helloworld-go.default.svc.cluster.local"
+  templates:
+    - name: trigger-serverless-dag
+      dag:
+        tasks:
+          - name: invoke-knative-function
+            template: http-trigger-step
+            arguments:
+              parameters:
+                - name: target_url
+                  value: "{{workflow.parameters.target_url}}"
+
+    - name: http-trigger-step
+      inputs:
+        parameters:
+          - name: target_url
+      container:
+        # curlimages/curl uses Alpine BusyBox sh; enforce strict -eu failure mode without bash-only pipefail
+        image: curlimages/curl:8.11.1
+        command: [/bin/sh, -eu, -c]
+        args:
+          - |
+            TARGET_URL="{{inputs.parameters.target_url}}"
+            echo "Dispatching event trigger to Knative Service: ${TARGET_URL}"
+            RESPONSE="$(curl -fsS --max-time 30 -w "\nHTTP_STATUS:%{http_code}" "${TARGET_URL}")"
+            echo "${RESPONSE}"
