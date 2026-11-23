@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage-validation
+  labels:
+    app.kubernetes.io/part-of: homelab
+    platform.homelab/layer: storage
