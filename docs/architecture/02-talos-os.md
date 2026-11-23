@@ -15,9 +15,9 @@ graph TD
     end
 
     subgraph Cluster Provisioning
-        Tofu -->|mTLS API :50000| CP[Control Plane: HP 6300]
-        Tofu -->|mTLS API :50000| W1[Worker 1: Lenovo 310S]
-        Tofu -->|mTLS API :50000| W2[Worker 2: Dell 15R]
+        Tofu -->|mTLS API :50000| CP[Control Plane: HP 6300 SFF]
+        Tofu -->|mTLS API :50000| W1[Worker 1: HP Pavilion 590]
+        Tofu -->|mTLS API :50000| W2[Worker 2: Lenovo 310S]
     end
 
     subgraph Immutable OS Runtime
@@ -31,14 +31,14 @@ graph TD
 To support heterogeneous bare-metal hardware and satisfy downstream storage primitives (Longhorn), custom image schematics are compiled via the Sidero Image Factory (`factory.talos.dev`).
 
 ### Image Schematic Mapping
-* **Control Plane (HP Compaq Pro 6300):**
+* **Control Plane (`controlplane-1` — HP Compaq Pro 6300 SFF, 20GB RAM, 256GB SSD + 931.5GB HDD):**
   * Image Hash: `613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245`
   * Extensions: `siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`
-* **Worker Nodes (Lenovo ideacenter 310S & Dell Inspiron 15R):**
+* **Worker Nodes (`worker-1` — HP Pavilion 590-p0xxx [12GB RAM, Dual 931.5GB HDDs] & `worker-2` — Lenovo ideacenter 310S [8GB RAM, 465.8GB HDD]):**
   * Image Hash: `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09`
   * Extensions: `siderolabs/realtek-firmware`, `siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`
 
 ## 4. Failure Domains & Resilience
 
-* **API Server & Control Plane SPOF:** The cluster relies on a single control plane node (HP Compaq Pro 6300 at `10.10.10.51`) backed by `kube-vip` (`10.10.10.10`). Loss of this node halts the Kubernetes API (`6443`), though local container runtimes on workers may continue running temporarily.
-* **Storage Isolation:** All persistent workloads depend on worker node block devices (`/dev/sdc`) backed by the injected `iscsi-tools` extension.
+* **API Server & Control Plane SPOF:** The cluster relies on a single control plane node (HP Compaq Pro 6300 at `10.10.10.51`) backed by Talos Native L2 VIP (`10.10.10.10`). Loss of this node halts the Kubernetes API (`6443`), though local container runtimes on workers may continue running temporarily.
+* **Storage Isolation:** Persistent workloads leverage dedicated SATA drives across the nodes (`256GB SSD + 931.5GB HDD` on `controlplane-1`, `Dual 931.5GB HDDs` on `worker-1`, and `465.8GB HDD` on `worker-2`) backed by the injected `iscsi-tools` extension.

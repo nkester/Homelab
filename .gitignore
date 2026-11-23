@@ -1,7 +1,12 @@
 talosconfig
 secrets.yaml
 
+# Local Environment Credentials (Zero-Token-in-Git)
+.env
+**/.env
+
 # OpenTofu/Terraform
 *.tfstate
 **/.terraform/*
 *.tfstate.*
+*tfplan*

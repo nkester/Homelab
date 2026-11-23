@@ -4,38 +4,62 @@
 
 ### Architecture & State Management
 This module utilizes OpenTofu to generate deterministic cryptographic material, machine secrets, and YAML configuration patches for the immutable Talos Linux nodes. 
-* **Provider:** `siderolabs/talos` locked to `v0.12.0-alpha.5`.
-* **State:** Local `terraform.tfstate`.  
-* **CRITICAL:** State files contain plaintext cryptographic root-of-trust material and are strictly excluded from version control via `.gitignore`.
+* **Provider:** `siderolabs/talos` locked to `v0.12.0-alpha.5`, `hashicorp/helm` locked to `~> 2.12`.
+* **State Backend:** GitLab-managed HTTP Remote State Backend (`homelab-bootstrap`) with distributed HTTP state locking (`POST /lock`, `DELETE /lock`).
+* **Zero-Token-in-Git:** Backend credentials and project variables are managed via local `.env` (git-ignored) and initialized via `./init-state.sh`. Plaintext state containing Talos PKI machine secrets is persisted securely in GitLab.
 
 ### Hardware Configuration Exceptions
 Talos implicit network configurations are overridden via `config_patches` to ensure high-availability routing and stable DHCP leases.
 * **Control Node (HP Compaq Pro 6300 SFF):** The Intel 82579LM Gigabit Network Connection requires explicit binding to `eno1`. The Layer 2 VIP (`10.10.10.10`) is attached to this interface. 
-* **Explicit TALOS Linux Version:** Through the `config_patches` block, we explicitly tell TALOS where to install the OS and which version to use. This was important because without this, the Open Tofu `siderolabs/talos` provider defaulted to installing the latest alpha version of the OS. This caused networking issues so we opted to use the latest stable deployment. The required manifest items are:
-   ```yaml
-   install = {
-          disk = "/dev/sda"
-          image = "ghcr.io/siderolabs/installer:v1.13.7"
-        }
-   ```
+* **Explicit TALOS Linux Version & Sidero Image Factory Schematics:**
+  To guarantee support for bare-metal hardware and downstream storage primitives (Longhorn), images must be generated via the [Sidero Image Factory](https://factory.talos.dev/) with explicit system extensions:
+  * **Control Plane (`controlplane-1` — HP Compaq Pro 6300 SFF):**
+    * **Extensions:** `siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`
+    * **Schematic ID:** `613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245`
+    * **Talos Version:** `v1.13.7` (Architecture: `amd64`, Boot: `metal-amd64`)
+    * **Installer Image:** `factory.talos.dev/installer/613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245:v1.13.7`
+    * **Direct ISO Download:** `https://factory.talos.dev/image/613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245/v1.13.7/metal-amd64.iso`
+  * **Workers (`worker-1` — HP Pavilion 590 & `worker-2` — Lenovo ideacenter 310S):**
+    * **Extensions:** `siderolabs/realtek-firmware` (for `RTL8111/8168` `r8169`), `siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`
+    * **Schematic ID:** `71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09`
+    * **Talos Version:** `v1.13.7` (Architecture: `amd64`, Boot: `metal-amd64`)
+    * **Installer Image:** `factory.talos.dev/installer/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09:v1.13.7`
+    * **Direct ISO Download:** `https://factory.talos.dev/image/71405e3fe611adf767ae6e03aa4bf7535f53b8f7abbdc24a466b65d06af43a09/v1.13.7/metal-amd64.iso`
 * **Establishing Kube-VIP:** To attach the Layer 2 VIP to the control plane's network interface, we added the `vip = {ip = "10.10.10.10"}` within the network portion of the `config_patches` block.  
   * See ADR-0003 for more information on this decision to use the Talos native layer 2 VIP.
+
+### Bootable USB Generation SOP
+When a bare-metal node requires physical recovery or initial provisioning into Maintenance Mode:
+1. Download the target ISO from the Sidero Image Factory link above.
+2. Flash to a USB flash drive via `dd` or tool of choice (e.g., BalenaEtcher, Raspberry Pi Imager):
+   ```bash
+   # Identify USB device (e.g., /dev/sdX)
+   lsblk
+   
+   # Write image directly to target disk (replace sdX with your USB drive)
+   sudo dd if=metal-amd64.iso of=/dev/sdX bs=4M status=progress conv=fsync
+   ```
+3. Insert USB into the target node, enter boot menu (F9 on HP, F12 on Lenovo), select the USB UEFI entry, and allow Talos to enter Maintenance Mode.
 
 ### Execution SOP
 To provision a node or rebuild the cluster from a bare-metal state:
 
-1. **Initialize Workspace:**
-   `tofu init`
-2. **Apply Configuration State:**
-   `tofu apply`
-3. **Extract Talos Client Configuration:**
+1. **Configure Environment:**
+   Copy `.env.example` to `.env` and populate `GITLAB_PROJECT_ID` and `GITLAB_ACCESS_TOKEN`.
+2. **Initialize Remote Backend:**
+   `./init-state.sh`
+3. **Plan Configuration State:**
+   `tofu plan -out=tfplan`
+4. **Apply Configuration State:**
+   `tofu apply tfplan`
+5. **Extract Talos Client Configuration:**
    `tofu output -raw talosconfig > ~/.talos/config`
    `chmod 600 ~/.talos/config`
    `export TALOSCONFIG=~/.talos/config`
-4. **Extract Kubernetes Credentials (Post-Bootstrap):**
+6. **Extract Kubernetes Credentials (Post-Bootstrap):**
    `talosctl --nodes 10.10.10.51 kubeconfig ~/.kube/config`
    `chmod 600 ~/.kube/config`
-5. **Check Nodes on the Cluster:**
+7. **Check Nodes on the Cluster:**
    `kubectl get nodes -o wide`
 
 

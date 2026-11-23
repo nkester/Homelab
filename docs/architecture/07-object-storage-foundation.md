@@ -49,8 +49,8 @@ graph TD
     end
 
     subgraph L1 [Layer I: Physical Hardware]
-        W01_Disk[(Worker 1 Disk - 500GB HDD)]
-        W02_Disk[(Worker 2 Disk - 1TB HDD)]
+        W01_Disk[(Worker 1: HP 590 - Dual 931.5GB HDDs)]
+        W02_Disk[(Worker 2: Lenovo 310S - 465.8GB HDD)]
     end
 
     %% Flow
@@ -83,7 +83,7 @@ Individual MinIO server pods mount Longhorn PVCs using `ReadWriteOnce` (RWO) acc
 - **HDD Performance & Write Amplification Optimization:** Mechanical HDDs suffer from low IOPS (~100-200 IOPS). Feature 3.4 utilizes the existing default `longhorn` StorageClass (`storageClassName: longhorn`). If write amplification tuning is required in future iterations, a custom StorageClass with `numberOfReplicas: 1` can be provisioned to delegate node resiliency entirely to MinIO's application pool.
 
 ### 3.3 Storage Capacity & Dynamic Expansion
-- **Baseline Allocation:** Initial PVC size is provisioned at `10Gi` per server volume as a conservative baseline to preserve physical disk capacity on worker nodes (`worker-1`: 500GB HDD, `worker-2`: 1TB HDD).
+- **Baseline Allocation:** Initial PVC size is provisioned at `10Gi` per server volume as a conservative baseline to preserve physical disk capacity on worker nodes (`worker-1`: Dual 931.5GB HDDs, `worker-2`: 465.8GB HDD).
 - **Vertical Expansion (Dynamic PVC Resize):** Longhorn supports dynamic volume expansion (`allowVolumeExpansion: true`). Storage capacity can be vertically scaled by modifying the PVC storage request in `infrastructure/storage/minio/tenant.yaml` (e.g., `10Gi` -> `50Gi`) once provisioned in Phase 2; Longhorn resizes the filesystem online without service interruption.
 - **Horizontal Expansion (MinIO Pools):** In MinIO Operator v6+, `volumesPerServer` is immutable within an existing pool. Large capacity additions are performed horizontally by appending a new `pool` block to the `Tenant` custom resource.
 

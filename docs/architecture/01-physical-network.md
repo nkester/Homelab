@@ -33,9 +33,9 @@ graph TD
         RBR50[Orbi Base L2 Bridge]
         RBS50[Orbi Satellite L2 Bridge]
         Switch[TL-SG108E Switch]
-        HP[HP Control Node]
-        W01[Lenovo Worker 01]
-        W02[Dell Worker 02]
+        HP[HP 6300 Control Node]
+        W01[HP 590 Worker 01]
+        W02[Lenovo 310S Worker 02]
     end
 
     %% WAN Connectivity
@@ -76,9 +76,9 @@ graph TD
 
 | Node Role | Hardware | Physical NIC | Talos Logical Interface | Static IP | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Control Plane 1 | HP Compaq Pro 6300 | Intel 82579LM | `eno1` | 10.10.10.51 | Bound to Talos Native VIP (10.10.10.10) |
-| Worker 1 | Lenovo ideacenter 310S | Realtek RTL8111/8168 | `enp2s0` | 10.10.10.52 | `wlan0` explicitly disabled in UEFI |
-| Worker 2 | Dell Inspiron 15R | Realtek RTL810xE | `enp1s0` | 10.10.10.53 | Intel Wireless 7260 isolated via declarative OS-level interface omission (UEFI disable unavailable). |
+| Control Plane 1 (`controlplane-1`) | HP Compaq Pro 6300 SFF (20GB RAM) | Intel 82579LM (`e1000e`) | `eno1` | 10.10.10.51 | Bound to Talos Native VIP (10.10.10.10); 256GB SSD + 931.5GB 2.5" HDD |
+| Worker 1 (`worker-1`) | HP Pavilion 590-p0xxx (12GB RAM) | Realtek RTL8111/8168 (`r8169`) | `enp2s0` | 10.10.10.52 | `wlp1s0` (`RTL8821CE`) isolated via UEFI/declarative config; Dual 931.5GB 3.5" HDDs |
+| Worker 2 (`worker-2`) | Lenovo ideacenter 310S (8GB RAM) | Realtek RTL8111/8168 (`r8169`) | `enp2s0` | 10.10.10.53 | Re-assigned from `.52` to `.53` (replacing retired Dell 15R); `wlan0` disabled in UEFI; 465.8GB HDD |
 
 ## 4. Resilience & Failure Domains  
 
