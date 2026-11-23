@@ -4,12 +4,6 @@ kind: Kustomization
 namespace: longhorn-system
 
 resources:
-  - namespace.yaml
-
-helmCharts:
-  - name: longhorn
-    repo: https://charts.longhorn.io
-    version: 1.6.2
-    releaseName: longhorn
-    namespace: longhorn-system
-    valuesFile: values.yaml
+  - nodes/controlplane-1.yaml
+  - nodes/worker-1.yaml
+  - nodes/worker-2.yaml
