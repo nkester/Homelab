@@ -6,4 +6,5 @@ Chronological records of the lab's evolution, categorized by Epic. These logs pr
 - [Epic 1: Hardware & Network Foundation](./epic-1.md)  
 - [Epic 2: Kubernetes Bootstrap (Talos OS)](./epic-2.md)  
 - [Epic 3: GitOps & Analytic Stack](./epic-3.md)  
+  - [Feature 3.4-R: Plane 1 State & Hardware Consolidation Refactor](./epic-3-refactor-hardware-and-state-consolidation.md)  
 

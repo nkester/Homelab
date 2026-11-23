@@ -3,7 +3,7 @@
 ## Overview
 This directory contains the declarative manifests and values overlays for the cluster's distributed block storage layer powered by **Longhorn**.
 
-Longhorn provides resilient, replicated, persistent block storage across bare-metal Talos Linux nodes (`HP Control Node 10.10.10.51`, `Lenovo Worker 1 10.10.10.52`, `Dell Worker 2 10.10.10.53`).
+Longhorn provides resilient, replicated, persistent block storage across bare-metal Talos Linux nodes (`HP 6300 Control Node 10.10.10.51`, `HP Pavilion 590 Worker 1 10.10.10.52`, `Lenovo 310S Worker 2 10.10.10.53`).
 
 ## Architectural Design & Key Decisions
 - **Storage Driver**: Longhorn Engine & CSI Plugin.

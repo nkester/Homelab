@@ -4,6 +4,7 @@ metadata:
   name: minio
   namespace: minio-tenant
 spec:
+  image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
   configuration:
     name: minio-creds
   pools:
