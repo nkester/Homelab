@@ -122,4 +122,4 @@ The user is building an operations research analytics platform on bare-metal har
 - HomeLab Project Roadmap (./docs/HomeLab_Project_Roadmap.csv)
 - Hardware and Storage Inventory (./docs/hardware_inventory.csv)
 - Home Lab Retrospective (./docs/Retrospective.csv)
-- Repository: https://github.com/nkester/homelab (Focus: Homelab and Epic branches)
+- Repository: https://github.com/nkester/homelab (Focus: Homelab and Epic branches for current state and argocd-deploy for applications deployed into the environment)

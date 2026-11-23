@@ -7,6 +7,8 @@ spec:
   template:
     metadata:
       annotations:
+        # Explicitly bind KPA autoscaler class to prevent bootstrap webhook race conditions
+        autoscaling.knative.dev/class: "kpa.autoscaling.knative.dev"
         # Scale to zero grace period configured for validation
         autoscaling.knative.dev/scale-to-zero-pod-retention-period: "15s"
         autoscaling.knative.dev/window: "15s"
@@ -16,3 +18,12 @@ spec:
           env:
             - name: TARGET
               value: "ORSA Homelab"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault

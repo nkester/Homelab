@@ -20,15 +20,15 @@
 | Hostname | Role | Hardware Model | IP Address | MAC Address | Allocation |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **controlplane-1** | Talos Control Plane | HP Compaq Pro 6300 SFF (20GB RAM, 256GB SSD + 931.5GB HDD) | `10.10.10.51` | `A0-48-1C-98-4E-E3` | Static (OS) / DHCP Reservation |
-| **worker-1** | Talos Worker 01 | HP Pavilion 590-p0xxx (12GB RAM, Dual 931.5GB HDDs) | `10.10.10.52` | `28-3A-4D-07-EE-65` | Static (OS) / DHCP Reservation |
+| **worker-1** | Talos Worker 01 | HP Pavilion 590-p0xxx (12GB RAM, Dual 931.5GB HDDs) | `10.10.10.52` | `F4-39-09-33-DC-F9` | Static (OS) / DHCP Reservation |
 | **worker-2** | Talos Worker 02 | Lenovo ideacenter 310S-08IAP (8GB RAM, 465.8GB HDD) | `10.10.10.53` | `6C-4B-90-45-42-16` | Static (OS) / DHCP Reservation |
 
 ### 2.3 Kubernetes Virtual IP (VIP) & Routing Blocks
 | Service | Purpose | IP / Range | Manager |
 | :--- | :--- | :--- | :--- |
 | **API Server VIP** | HA Control Plane | `10.10.10.10` | Talos Native L2 VIP |
-| **NGINX Ingress** | Primary North-South Ingress | `10.10.10.17` | Cilium LB IPAM + L2 |
-| **Kourier Gateway** | Knative Serverless Ingress | `10.10.10.18` | Cilium LB IPAM + L2 |
+| **Kourier Gateway** | Knative Serverless Ingress | `10.10.10.17` | Cilium LB IPAM + L2 |
+| **NGINX Ingress** | Primary North-South Ingress | `10.10.10.18` | Cilium LB IPAM + L2 |
 | **LB Pool** | Shared LoadBalancer Pool | `10.10.10.17 - 10.10.10.25` | Cilium LB IPAM |
 
 ### 2.4 CNI & Pod Networking Block
