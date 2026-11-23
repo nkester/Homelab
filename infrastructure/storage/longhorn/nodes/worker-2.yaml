@@ -1,0 +1,25 @@
+# Declarative Longhorn Node Disk Topology: worker-2 (10.10.10.53)
+# Hardware: Lenovo ideacenter 310S — /dev/sdc (497GB OS HDD, single drive)
+apiVersion: longhorn.io/v1beta2
+kind: Node
+metadata:
+  name: worker-2
+  namespace: longhorn-system
+spec:
+  name: worker-2
+  allowScheduling: true
+  evictionRequested: false
+  instanceManagerCPURequest: 0
+  tags:
+    - worker
+  disks:
+    # Existing primary OS HDD — preserved key to retain active MinIO replicas without disruption
+    default-disk-080400000000:
+      allowScheduling: true
+      diskType: filesystem
+      evictionRequested: false
+      path: /var/lib/longhorn
+      storageReserved: 149266427904
+      tags:
+        - hdd
+        - os-shared

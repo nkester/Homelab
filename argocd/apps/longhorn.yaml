@@ -33,8 +33,14 @@ spec:
           defaultReplicaCount: 2
           storageMinimalAvailablePercentage: 10
           replicaAutoBalance: "least-effort"
+          replicaSoftAntiAffinity: false
         csi:
           kubeletRootDir: "/var/lib/kubelet"
+        longhornUI:
+          replicas: 1
+        metrics:
+          prometheus:
+            enabled: true
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: longhorn-system

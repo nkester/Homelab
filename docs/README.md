@@ -12,7 +12,8 @@ This repository implements an immutable, bare-metal Kubernetes platform designed
 ├── adr                   # Architectural Decision Record (ADR): The "Why" decisions were made that resulted in this architecture
 ├── architecture          # The "What" - describing the system state 
 ├── implementation plans  # The "How" - describing how we built the architecture
-└── logs                  # Project logs describing pivots, changes, and milestones.
+├── logs                  # Project logs describing pivots, changes, and milestones.
+└── runbooks              # Day-2 operational runbooks (UI/API access, port-forwards, read-only diagnostics)
 ```
 
 ## 3. Platform Architecture (4-Tier Framework)
@@ -27,21 +28,23 @@ Documentation and configurations are organized by functional layers to isolate f
 ### Layer II: Logical Network & Provisioning
 *Focus: Immutable OS (Talos), CNI (Cilium), and IP Address Management (IPAM).*
 - **[Talos MachineConfigs](../../infrastructure/bootstrap/README.md)**: Node-level configurations and API-driven OS management.
-- **[Networking & VIP Strategy](../../infrastructure/networking/README.md)**: `kube-vip` configuration and Cilium eBPF implementation.
+- **[Networking & VIP Strategy](../../infrastructure/networking/README.md)**: Talos Native VIP (API Server) and Cilium eBPF LB-IPAM / L2 Announcements.
 - **[ADR-0001: Subnet Pivot](./adr/0001-subnet-pivot.md)**: Documentation of the shift to the 192.168.1.x neighborhood.
 
 ### Layer III: Management Plane
 *Focus: GitOps synchronization, persistent storage, and cluster-wide services.*
 - **[ArgoCD Control Plane](../../argocd/README.md)**: The source of truth for all application deployments.
 - **[Longhorn Distributed Storage](../../infrastructure/storage/README.md)**: Block storage orchestration and volume replication policies.
-- **[External Secrets Management](../../infrastructure/secrets/README.md)** (*Planned*): Integration with secure credential providers.
+- **[External Secrets Management](./architecture/06-external-secrets-integration.md)**: Integration with GitLab CI/CD Variables via External Secrets Operator.
+- **[Serverless Execution (Knative)](./architecture/08-serverless-execution.md)**: Scale-to-zero FaaS control plane, Kourier gateway, and Argo Workflows triggers.
 
 ### Layer IV: Workload Layer
 *Focus: Analytic applications and data persistence.*
 - **[CloudNativePG (PostgreSQL)](../../apps/database/README.md)**: High-availability database clusters for backend data.
 - **[ORSA Analytics Suite](../../apps/analytics/README.md)**: VSCode Server, RStudio, and KubeFlow orchestration.
 
-## 3. Engineering Governance
+## 4. Engineering Governance & Operations
+- **[Cluster Access Runbook](./runbooks/cluster-access.md)**: Centralized UI/API port-forwards, token extraction, and read-only health checks.
 - **[Architectural Decision Records (ADR)](./adr/README.md)**: Formal records of significant design pivots.
 - **[Project Logs](./logs/README.md)**: Chronological record of technical epics and milestones.
-- **[Retrospectives](./retrospective.csv)**: Lessons learned and process improvements.
+- **[Retrospectives](./Retrospective.csv)**: Lessons learned and process improvements.
