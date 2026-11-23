@@ -5,7 +5,10 @@ metadata:
   namespace: kube-system
 spec:
   blocks:
-  - cidr: "10.10.10.20/28" # 10.10.10.16 - 10.10.10.31
+    # Explicit non-overlapping range (10.10.10.17 - 10.10.10.25)
+    # Prevents collision with ER605 VLAN 10 DHCP pool (10.10.10.30 - 10.10.10.99)
+    - start: "10.10.10.17"
+      stop: "10.10.10.25"
 ---
 apiVersion: "cilium.io/v2alpha1"
 kind: CiliumL2AnnouncementPolicy
