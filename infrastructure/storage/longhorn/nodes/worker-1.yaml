@@ -1,0 +1,36 @@
+# Declarative Longhorn Node Disk Topology: worker-1 (10.10.10.52)
+# Hardware: HP Pavilion Desktop 590 — /dev/sda (998GB OS HDD) + /dev/sdb1 (1.0TB SATA HDD)
+apiVersion: longhorn.io/v1beta2
+kind: Node
+metadata:
+  name: worker-1
+  namespace: longhorn-system
+spec:
+  name: worker-1
+  allowScheduling: true
+  evictionRequested: false
+  instanceManagerCPURequest: 0
+  tags:
+    - worker
+  disks:
+    # Existing primary OS HDD — preserved key to retain active MinIO replicas without disruption
+    default-disk-080400000000:
+      allowScheduling: true
+      diskType: filesystem
+      evictionRequested: false
+      path: /var/lib/longhorn
+      storageReserved: 299222062694
+      tags:
+        - hdd
+        - os-shared
+    # Dedicated 1.0TB SATA HDD mounted via Talos UserVolumeConfig (u-longhorn-extra)
+    longhorn-extra:
+      allowScheduling: true
+      diskType: filesystem
+      evictionRequested: false
+      path: /var/mnt/longhorn-extra
+      # 10 GiB headroom (10 * 1024^3 bytes) on dedicated data disk
+      storageReserved: 10737418240
+      tags:
+        - hdd
+        - dedicated

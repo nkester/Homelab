@@ -1,0 +1,37 @@
+# Declarative Longhorn Node Disk Topology: controlplane-1 (10.10.10.51)
+# Hardware: HP Compaq Pro 6300 SFF — /dev/sda (256GB OS/etcd SSD) + /dev/sdb1 (1.0TB SATA HDD)
+# Decision 2 (Option A): Isolate etcd SSD by disabling scheduling on /var/lib/longhorn;
+# schedule replicas exclusively on the dedicated 1.0TB HDD (/var/mnt/longhorn-extra).
+apiVersion: longhorn.io/v1beta2
+kind: Node
+metadata:
+  name: controlplane-1
+  namespace: longhorn-system
+spec:
+  name: controlplane-1
+  allowScheduling: true
+  evictionRequested: false
+  instanceManagerCPURequest: 0
+  tags:
+    - control-plane
+  disks:
+    # Existing OS/etcd SSD disk — preserved key, scheduling disabled to protect etcd fsync latency
+    default-disk-080400000000:
+      allowScheduling: false
+      diskType: filesystem
+      evictionRequested: false
+      path: /var/lib/longhorn
+      storageReserved: 76087874764
+      tags:
+        - os-ssd-isolated
+    # Dedicated 1.0TB SATA HDD mounted via Talos UserVolumeConfig (u-longhorn-extra)
+    longhorn-extra:
+      allowScheduling: true
+      diskType: filesystem
+      evictionRequested: false
+      path: /var/mnt/longhorn-extra
+      # 10 GiB headroom (10 * 1024^3 bytes) on dedicated data disk
+      storageReserved: 10737418240
+      tags:
+        - hdd
+        - dedicated
