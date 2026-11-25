@@ -52,4 +52,16 @@ Analyze the execution transcript for the completed feature across three dimensio
 ### 7. Human–AI Interaction Summary (Optional Closeout Artifact)
 - Invoke the `interaction-summary` skill to generate a sanitized, high-signal summary of the feature's human–agent collaboration under `docs/logs/interactions/feature_<#-#>_<slug>.md`.
 - Verify the Zero-Token-in-Git Sanitization Gate before committing.
+
+### 8. Annotated Git Release Tag Generation
+- Generate an annotated Git tag command conforming to the repository's release tag convention:
+  - **Tag Name:** `v2.<epic_number>.<feature_number>` (e.g., `v2.4.2`, or `v2.3.4-R` for refactor suffixes).
+  - **Tag Message Format:**
+    ```text
+    Epic <epic_number>: <Epic Title>
+    Feature <feature_number>: <Feature Title>
+      - <High-level feature deliverable / verified DoD item 1>
+      - <High-level feature deliverable / verified DoD item 2>
+    ```
+- Present the exact text code block for the tag name and the tag message separately for the user to execute manually once the closeout commit is finalized.
 - Present this for review and validation.
