@@ -75,9 +75,9 @@ Feature,3.5,Serverless Execution (Knative),"Introduce Knative Serving to impleme
 3. Service routing configured for event-driven triggers."
 Epic,4,Core Infrastructure Services,"Shared services for the cluster (Storage, Ingress, Certs).",In-progress,"1. Shared services active (Storage, Ingress, Certs)
  2. Persistent volume claims binding successfully"
-Feature,4.1,Longhorn Distributed Storage,"Implementing persistent, replicated block storage.",In-progress,"1. Longhorn UI shows all disks active
+Feature,4.1,Longhorn Distributed Storage,"Implementing persistent, replicated block storage.",Done,"1. Longhorn UI shows all disks active
  2. Volume replication verified across nodes"
-Feature,4.2,Ingress & cert-manager,Automated SSL/TLS and HTTP routing.,To Do,"1. cert-manager issuing Let's Encrypt certificates
+Feature,4.2,Ingress & cert-manager,Automated SSL/TLS and HTTP routing.,In-progress,"1. cert-manager issuing Let's Encrypt certificates
  2. Ingress controller routing external traffic"
 Feature,4.3,FOSS S3 Object Storage Migration (SeaweedFS / Garage),Transition from deprecated MinIO to an unencumbered FOSS S3 backend (SeaweedFS or Garage) to eliminate supply-chain debt (ADR-0011).,To Do,"1. FOSS S3 backend deployed via ArgoCD.
  2. Data migration from MinIO completed.
