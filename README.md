@@ -147,11 +147,11 @@ Legend:
 
 🔵 Epic 4: Core Infrastructure Services
 
-  🔵 Feature 4.1: Longhorn Distributed Storage
+  ✅ Feature 4.1: Longhorn Distributed Storage
 
       - Implement persistent, replicated block storage.
 
-  🔲 Feature 4.2: Ingress & cert-manager
+  🔵 Feature 4.2: Ingress & cert-manager
 
       - Implement automated SSL/TLS and HTTP routing.
 
